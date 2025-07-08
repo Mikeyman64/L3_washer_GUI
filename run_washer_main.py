@@ -69,10 +69,15 @@ class Runner(MDApp):
 
     def build(self):
         Window.size = (1024, 600)
-        LabelBase.register(name='NexaHeavy', fn_regular='C:/Users/U313773/Documents/WasherGUI/washer-venv/fonts/Nexa-Heavy.ttf')
-        LabelBase.register(name='NexaLight', fn_regular='C:/Users/U313773/Documents/WasherGUI/washer-venv/fonts/Nexa-ExtraLight.ttf')
-        LabelBase.register(name='MC_Alt', fn_regular='C:/Users/U313773/Documents/WasherGUI/washer-venv/fonts/MinecrafterAlt.ttf')
-        LabelBase.register(name='MC_Reg', fn_regular='C:/Users/U313773/Documents/WasherGUI/washer-venv/fonts/MinecrafterReg.ttf')
+#        LabelBase.register(name='NexaHeavy', fn_regular='C:/Users/U313773/Documents/WasherGUI/washer-venv/fonts/Nexa-Heavy.ttf')
+#        LabelBase.register(name='NexaLight', fn_regular='C:/Users/U313773/Documents/WasherGUI/washer-venv/fonts/Nexa-ExtraLight.ttf')
+#        LabelBase.register(name='MC_Alt', fn_regular='C:/Users/U313773/Documents/WasherGUI/washer-venv/fonts/MinecrafterAlt.ttf')
+#        LabelBase.register(name='MC_Reg', fn_regular='C:/Users/U313773/Documents/WasherGUI/washer-venv/fonts/MinecrafterReg.ttf')
+
+        LabelBase.register(name='NexaHeavy', fn_regular='./fonts/Nexa-Heavy.ttf')
+        LabelBase.register(name='NexaLight', fn_regular='./fonts/Nexa-ExtraLight.ttf')
+        LabelBase.register(name='MC_Alt', fn_regular='./fonts/MinecrafterAlt.ttf')
+        LabelBase.register(name='MC_Reg', fn_regular='./fonts/MinecrafterReg.ttf')
 
         self.theme_cls.font_styles.update({
             "NexaHeavy": ["NexaHeavy", 16, False, 0.15],

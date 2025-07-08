@@ -49,19 +49,19 @@ class NewCalibrationPage(Screen):
 
 
 
+'''
 
 
 
-
-import libgpiod_RPI5_manager as gpio_manager
-import wash_profiles as wp
-from rpi_lcd import LCD
-from datetime import datetime
-from threading import Thread
-import gpiod
-from gpiod.line import Direction, Value, Bias, Edge
-import time, sys, os
-import busio
+#import libgpiod_RPI5_manager as gpio_manager
+#import wash_profiles as wp
+#from rpi_lcd import LCD
+#from datetime import datetime
+#from threading import Thread
+#import gpiod
+#from gpiod.line import Direction, Value, Bias, Edge
+#import time, sys, os
+##import busio
 import digitalio
 import board
 import adafruit_mcp3xxx.mcp3008 as MCP
@@ -177,3 +177,4 @@ def start_threads():
     lcd_thread.daemon = True
     monitor_thread.start()
     lcd_thread.start()
+'''
