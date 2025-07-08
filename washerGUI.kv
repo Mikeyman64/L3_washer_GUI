@@ -1,0 +1,813 @@
+# ScreenManager:
+#     BarcodeScreen:
+#     # WelcomeScreen:
+#     AddBoardsScreen:
+
+
+# <GlobalScreenManager>:
+#     # BarcodeScreen:
+#     AddBoardsScreen:
+#     WashOptionsScreen:
+
+<BarcodeScreen>:
+    name: "barcode"
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [50, 15, 50, 15]
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [150,150,150,150]
+            size_hint_y: 0.9
+
+            Label:
+                id: user_id_label
+                text: 'Scan Employee ID (U-number)'
+                font_name: "NexaHeavy"
+                font_size: 32
+                color: 1,1,1
+                padding: [150, 100, 150, 150]
+
+            MDTextField:
+                id: user_id_in
+                focus: True
+                helper_text: "Scan Barcode"
+                icon_left: 'barcode'
+                halign: 'center'
+                normal_color: 1,1,1,0.05
+                color_active: 0,1,1,0.1
+                font_name: "NexaLight"
+                font_size: '20pt'
+                multiline: False
+                on_text_validate:
+                    root.user_id_store('User_ID', 'user_id_in', 'user_id_label')
+
+        BoxLayout:
+            size_hint_y: 0.1
+            padding: [10, 10, 10, 10]
+            spacing: 10
+
+
+            MDFabButton:
+                text: "calibration"
+                icon: "cog"  # Material Design icon name for gear
+                text_color: 1, 1, 1, 1  # White text
+                theme_bg_color: "Custom"
+                md_bg_color: [247/255, 187/255, 112/255, 1]
+                theme_text_color: "Custom"
+                radius: [20, 20, 20, 20]  # Rounded corners
+                size_hint: None, None
+                size: 70, 70
+                on_release:
+                    app.root.current = "calibrationDataPage"
+            # Button:
+            #     text: "SEE CALIBRATION DATA"
+            #     size_hint: None, None
+            #     font_name: "NexaHeavy"
+            #     font_size: 15
+            #     background_normal: ""
+            #     background_color: (225/255, 219/255, 210/255, 1)
+            #     size: 250, 75
+            #     pos_hint: {"x": 0}
+            #     style: "round"
+                # on_release:
+                #     app.root.current = "previous_screen"  # change this to your actual screen name
+# <BarcodeScreen>:
+#     name: "barcode"
+#     # on_enter: 
+#     #     # root.set_focus("user_id_in")
+#     #     root.user_clear()
+#     #     user_id_in.focus = True
+
+#     BoxLayout:
+#         # spacing: 400
+#         padding: [50,15,50,15]  # [LSide, TOP, RSide, BOTTOM]
+        
+        
+#         BoxLayout:
+#             orientation: 'vertical'
+#             # size: (20, 5)
+#             padding: [150,150,150,150]  # [LSide, TOP, RSide, BOTTOM]
+
+                
+#             Label:
+#                 id: user_id_label
+#                 text: 'Scan Employee ID (U-number)'
+#                 font_name: "NexaHeavy"
+#                 font_size: 32
+#                 # color: [.8, .6, .4, 1]
+#                 color: 1,1,1
+#                 padding: [150, 100, 150, 150]  # [LSide, TOP, RSide, BOTTOM]
+#             MDTextField:
+#                 id: user_id_in
+#                 focus: True
+#                 # mode: "round"
+#                 helper_text: "Scan Barcode"
+#                 icon_left: 'barcode'
+#                 # helper_text_mode: "persistent"
+#                 halign: 'center'
+
+#                 normal_color: 1,1,1,0.05
+#                 color_active: 0,1,1,0.1
+#                 # height: 300
+#                 # padding_y: [(self.height / 2.0 - (self.line_height / 2.0) * len(self._lines))/2, (self.height / 2.0 - (self.line_height / 2.0) * len(self._lines))/2]
+#                 font_name: "NexaLight"
+#                 font_size: '20pt'
+#                 # foreground_color: [1, 1, 1, 1]  # Set the color of the text and hint text to black
+#                 # background_color: [1, 1, 1, 0.2]  # Make the default background transparent
+#                 # padding: [20, 20, 20, 20]
+#                 # size_hint_y: 10
+#                 # size_hint_x: 10
+#                 multiline: False
+#                 on_text_validate:
+#                     root.user_id_store('User_ID', 'user_id_in', 'user_id_label')
+#                     # root.barcodeScanned()
+
+
+                    # canvas.before:
+                    # 	Color:
+                    # 		rgba: [25/255, 25/255, 25/255, 1]  # Background color
+                        # RoundedRectangle:
+                        # 	pos: self.pos
+                        # 	size: self.size
+                        # 	radius: [50]  # Adjust the radius for beveled edges
+                        # Color:
+                        # 	# rgba: [1, 1, 1, 0.2]  # Border color
+                        # Line:
+                        # 	width: 1.5
+                        # 	rounded_rectangle: (self.x, self.y, self.width, self.height, 50)  # Same radius as the background	
+
+
+
+
+
+
+
+
+
+<CalibrationDataPage>:
+    name: "calibrationDataPage"
+    GridLayout:
+        cols: 1
+        Label:
+            id: calibrationTitle
+            text: "Calibration Data"
+            font_name: "NexaHeavy"
+            font_size: '32pt'
+        # ===========================
+
+        BoxLayout:
+
+            orientation: 'horizontal'
+            Widget:
+                size_hint_x: 0.3
+            Label:
+                id: flowrate_label
+                text: "Current Flow Rate: "
+                font_name: "NexaLight"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Label:
+                id: flowrate_value
+                text: "10 mL/s"
+                font_name: "NexaHeavy"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Widget:
+                size_hint_x: 0.3
+        # ===================================
+
+        BoxLayout:
+
+            orientation: 'horizontal'
+            Widget:
+                size_hint_x: 0.3
+            Label:
+                id: pressure_value_label
+                text: "Current Pressure Value: "
+                font_name: "NexaLight"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Label:
+                id: pressure_value
+                text: "10 mL/s"
+                font_name: "NexaHeavy"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Widget:
+                size_hint_x: 0.3
+        # ===================================
+
+        BoxLayout:
+
+            orientation: 'horizontal'
+            Widget:
+                size_hint_x: 0.3
+            Label:
+                id: concentration_label
+                text: "Last Measured Concentration: "
+                font_name: "NexaLight"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Label:
+                id: concentration_value
+                text: "10 mL/s"
+                font_name: "NexaHeavy"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Widget:
+                size_hint_x: 0.3
+        # ===================================
+
+        BoxLayout:
+            padding: 20
+            spacing: 20
+            orientation: 'horizontal'
+            Button:
+                text: "Close"
+                font_name: "NexaHeavy"
+                font_size: '24pt'
+                background_color: (225/255, 219/255, 210/255, 1)
+                on_release: 
+                    root.closeButtonClicked()
+                    #root.manager.transition.direction = "right"
+            Button:
+                text: "New Calibration"
+                font_name: "NexaHeavy"
+                font_size: '24pt'
+                background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
+                background_color: [247/255, 187/255, 112/255, 1]
+                on_release: 
+                    #add yes/no confirmation pop-up
+                    root.newCalibButtonClicked()
+# =================================================================================
+
+<NewCalibrationPage>:
+    name: "newCalibPage"
+    GridLayout:
+        cols: 1
+        Label:
+            id: calibrationTitle
+            text: "Add New Calibration"
+            font_name: "NexaHeavy"
+            font_size: '32pt'
+        # ===========================
+
+        BoxLayout:
+
+            orientation: 'horizontal'
+            Widget:
+                size_hint_x: 0.3
+            Label:
+                id: flowrate_label
+                text: "Current Flow Rate: "
+                font_name: "NexaLight"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Label:
+                id: flowrate_value
+                text: "10 mL/s"
+                font_name: "NexaHeavy"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Widget:
+                size_hint_x: 0.3
+        # ===================================
+
+        BoxLayout:
+
+            orientation: 'horizontal'
+            Widget:
+                size_hint_x: 0.3
+            Label:
+                id: pressure_value_label
+                text: "Current Pressure Value: "
+                font_name: "NexaLight"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Label:
+                id: pressure_value
+                text: "10 mL/s"
+                font_name: "NexaHeavy"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Widget:
+                size_hint_x: 0.3
+        # ===================================
+
+        BoxLayout:
+
+            orientation: 'horizontal'
+            Widget:
+                size_hint_x: 0.3
+            Label:
+                id: concentration_label
+                text: "Last Measured Concentration: "
+                font_name: "NexaLight"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Label:
+                id: concentration_value
+                text: "10 mL/s"
+                font_name: "NexaHeavy"
+                font_size: '20pt'
+                width: self.texture_size[0]
+            Widget:
+                size_hint_x: 0.3
+        # ===================================
+
+        BoxLayout:
+            padding: 20
+            spacing: 20
+            orientation: 'horizontal'
+            Button:
+                text: "Close"
+                font_name: "NexaHeavy"
+                font_size: '24pt'
+                background_color: (225/255, 219/255, 210/255, 1)
+                on_release: 
+                    root.closeButtonClicked()
+                    #root.manager.transition.direction = "right"
+            Button:
+                text: "New Calibration"
+                font_name: "NexaHeavy"
+                font_size: '24pt'
+                background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
+                background_color: [247/255, 187/255, 112/255, 1]
+                on_release: 
+                    #add yes/no confirmation pop-up
+                    root.newCalibButtonClicked()
+
+
+
+
+# =================================================================================
+<WashOptionsScreen>:
+
+
+    id: washOptScrn
+    name: "washOptions"
+    size: root.width, root.height
+    BoxLayout:
+        cols: 1
+        orientation: 'vertical'
+        padding: 20,20,20,20
+        Label:
+            id:chosenOptn
+            text: 'Choose A Profile'
+            font_name: "NexaHeavy"
+            size_hint_y: None
+            font_size:32
+            
+            color: 1,1,1
+
+
+        GridLayout:
+            id: wt_buttons
+            
+            cols: 4
+            size_hint: (1, 1.5)
+            
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: (1.0, 0.3)
+
+            Button:
+                style: "rounded"
+                # width: dp(100)
+                # height: "1dp"
+                width: root.width*0.3
+                pos_hint: {'center_x': 0.5}
+
+                text: "Back"
+                
+                font_name: "NexaHeavy"
+
+                color: (0,0,0, 1) # TEXT color is black.
+                background_normal: '' # MUST do this to prevent grey
+                background_color: (247/255, 187/255, 112/255, 1) # BUTTON color is orange
+                # size_hint_x: 0.5
+                # size: (root.width*0.5, 50)
+                size_hint_y: 0.8
+                width: 20
+                # halign: center
+
+                
+                on_release: 
+                    root.washOptionsclickBackButton()
+					
+
+
+# ================================
+<AddBoardsScreen>:
+    name: 'boards_list'
+    on_enter: item_input.focus = True
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        padding: 10
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1.0, 0.2)
+            Label:
+                text: 'Scan Board Data'
+                font_name: "NexaHeavy"
+                font_size:32
+                color:[247/255, 187/255, 112/255, 1]
+            Label:
+                id: wash_type_board
+                text: "Wash Type Not Entered"
+                font_name: "NexaLight"
+                color: (1,1,1,1)
+                font_size: 25
+
+        ScrollView:
+            size_hint: (1, 0.8)
+            BoxLayout:
+                id: list_layout
+                padding: [0,10,0,10]
+                spacing: 10
+                orientation: 'vertical'
+                size_hint_y: None
+                row_default_height: 40
+                height: self.minimum_height
+                minimum_height: self.minimum_height
+                on_minimum_height: self.setter('height')
+
+        BoxLayout:
+            size_hint: (1, 0.2)
+            spacing: 10
+            Button:
+                id: board_backButton
+                font_name: "NexaHeavy"
+                font_size:24
+                text: "Back"
+                on_release: root.backButtonClicked() 
+            Button:
+                id: board_clearAll
+                font_name: "NexaHeavy"
+                font_size:24
+                background_color: (172/255,88/255,89/255,1)
+                text: "Clear All"
+                on_release: root.clearAllButton() 
+
+            TextInput:
+                id: item_input
+                hint_text: "Scan CCA Full Number"
+                font_name: "NexaHeavy"
+                font_size:16
+                multiline: False
+                on_text_validate: root.parse_and_add_item(self.text)
+
+            Button:
+                id: to_confirmation_page
+                text: "Next"
+                font_name: "NexaHeavy"
+                font_size:24
+                background_normal: ''
+                background_color:[247/255, 187/255, 112/255, 1]
+                on_release: 
+                    root.printArrays()
+                    root.confirmButtonClicked()
+
+                # root.add_item()
+
+
+<ConfirmWashPage>:
+    name: "confirmWashPage"
+    GridLayout:
+        cols: 1
+        Label:
+            id: sessionID_label
+            text: "Session ID: "
+            font_name: "NexaHeavy"
+            font_size: '20pt'
+            # background_color: [1,0,0,1]
+        Label:
+            id: userID_label
+            text: "User ID: "
+            font_name: "NexaHeavy"
+            font_size: '20pt'
+            # background_color: [1,0,0,1]
+        Label:
+            id: profile_label
+            text: "Chosen Profile: "
+            font_name: "NexaHeavy"
+            font_size: '20pt'
+            # background_color: [1,0,0,1]
+        Label:
+            id: CCACount_label
+            text: "CCA Count: "
+            font_name: "NexaHeavy"
+            font_size: '20pt'
+            # background_color: [1,0,0,1]
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                text: "Back"
+                font_name: "NexaHeavy"
+                font_size: '32pt'
+                background_color: [0.2,0.2,0.2,1]
+                on_release: 
+                    root.backButtonClicked()
+                    #root.manager.transition.direction = "right"
+            Button:
+                text: "Wash!"
+                font_name: "NexaHeavy"
+                font_size: '32pt'
+                background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
+                background_color: [247/255, 187/255, 112/255, 1]
+                on_release: 
+                    #add yes/no confirmation pop-up
+                    root.washButtonClicked()
+                    # root.new_sess()
+                    #start timer here
+                    # app.root.current = 'boards_list'
+                    #root.manager.transition.direction = "left"
+
+<WasherScreenCountdown>:
+    #on_enter: root.data_log(DataDict) #add data dict with start time and other info
+    name: "washerScreenCountdown"
+    # on_enter: 
+    #     root.start_timer()
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            id: washTypeLabel
+            text: "Chosen Profile: "
+            font_name: "NexaHeavy"
+            font_size: '20pt'
+            background_normal: ''
+            # background_color: [1,0,0,1]
+            pos_hint: {'center_x':0.5, 'center_y':0.2}
+            
+        #Timer showing wash type and time remaining as per profile
+        Label:
+            id: washTime
+            font_size: 40
+            background_normal: ''
+            font_name: "NexaHeavy"
+            markup: True
+            text: ''
+        # Button:
+        #     text: "Start Timer"
+        #     font_size: '20pt'
+        #     background_color: [1,0,0,1]
+        #     size_hint: (1.0, 0.1)
+        #     #pos_hint: {'center_x':0.5, 'bottom':0.0}
+        #     on_release: 
+        #         root.start_timer()
+        Button:
+            text: "Abort"
+            font_size: '30pt'
+            font_name: "NexaHeavy"
+            background_normal: ''
+            background_color: [172/255,88/255,89/255,1]
+            size_hint: (1.0, 0.5)
+            pos_hint: {'center_x':0.5, 'bottom':0.2}
+            on_release: 
+                root.abortPressed()
+
+
+
+
+
+<WasherAbortScreen>:
+    name: "washerAbortScreen"
+    # on_enter: print(root.DataDict)
+    # on_enter: root.data_log(root.DataDict) #update datadict with abort details and write to db
+
+
+
+
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: [0,0,0,60]
+        # AnchorLayout:
+        #     anchor_y: "top"
+        #     size_hint_y: None
+        #     height: 150  # adjust based on label font size
+
+
+        Label:
+            text: "Wash Log Aborted!"
+            font_name: "NexaHeavy"
+            font_size: '32pt'
+            background_normal: ''
+            # background_color: [172/255,88/255,89/255,1]
+            # pos_hint: {'center_x':0.5, 'center_y':0.5}
+            height: self.texture_size[1] + 80
+
+            canvas.before:
+                Color:
+                    rgba: [172/255,88/255,89/255,1]
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+
+        #this needs to be a scan-out function, not simply a button, "SCAN ID TO COMPLETE"
+        Widget:
+            height: 50
+            size_hint_y: None
+
+        Label:
+            text: "Returning to Main Menu in:"
+            font_name: "NexaHeavy"
+            font_size: '24pt'
+            background_normal: ''
+            background_color: [172/255,88/255,89/255,1]
+            # pos_hint: {'center_x':0.5, 'center_y':0.1}
+
+        Label:
+            id: returnToMenuTimer
+            text: "5"
+            font_name: "NexaHeavy"
+            font_size: '24pt'
+            # padding_y: 200
+            background_normal: ''
+            background_color: [172/255,88/255,89/255,1]
+            # pos_hint: {'center_x':0.5, 'center_y':0.1}
+
+
+
+
+
+    # Label:
+    #     text: "Wash Log Aborted"
+    #     font_name: "NexaHeavy"
+    #     font_size: '32pt'
+    #     background_normal: ''
+    #     # background_color: [172/255,88/255,89/255,1]
+    #     pos_hint: {'center_x':0.5, 'center_y':0.5}
+        
+    # Button:
+    #     text: "Main Menu"
+    #     font_name: "NexaHeavy"
+    #     font_size: '32pt'
+    #     background_normal: ''
+    #     background_color: [247/255, 187/255, 112/255, 1]
+    #     size_hint: (1.0, 0.1)
+    #     pos_hint: {'center_x':0.5, 'bottom':0.0}
+    #     on_release: 
+    #         root.mainMenuButton()
+    #         # root.board_all_clear()
+    #         # root.user_clear()
+    #         # app.root.current = 'userIn'
+    #         #root.manager.transition.direction = "down"
+
+
+
+
+
+<WasherCompleteScreen>
+    # on_enter: 
+    # root.data_log(root.DataDict) #update datadict with completion time and other updated data
+    name: "washerCompleteScreen"
+
+
+    # BoxLayout:
+    #     orientation: "vertical"
+    #     # padding: 10
+    #     # spacing: 20
+    #     Widget:
+
+    #     Label:
+    #         id: complete_label
+    #         text: "Wash Complete!"
+    #         font_name: "NexaHeavy"
+    #         font_size: '32sp'
+    #         color: 1, 1, 1, 1
+    #         # prevents height from being too
+    #         size_hint_y: None
+    #         height: self.texture_size[1] + 40  # or just set a fixed height like 100
+    #         padding: 0,0,0,300
+    #         canvas.before:
+    #             Color:
+    #                 rgba: [247/255, 187/255, 112/255, 1]
+    #             Rectangle:
+    #                 pos: self.pos
+    #                 size: self.size
+
+    #     BoxLayout:
+    #         orientation: "vertical"
+    #         spacing: 5  # << tighten spacing between the two labels
+    #         size_hint_y: None
+    #         height: self.minimum_height
+
+    #         Label:
+    #             text: "Returning to Main Menu in:"
+    #             font_name: "NexaHeavy"
+    #             font_size: '24sp'
+    #             color: 1, 1, 1, 1
+    #             size_hint_y: None
+    #             height: self.texture_size[1] + 20
+    #             # canvas.before:
+    #             #     Color:
+    #             #         rgba: 172/255, 88/255, 89/255, 1
+    #             #     Rectangle:
+    #             #         pos: self.pos
+    #             #         size: self.size
+
+    #         Label:
+    #             id: returnToMenuTimer
+    #             text: "5"
+    #             font_name: "NexaHeavy"
+    #             font_size: '24sp'
+    #             color: 1, 1, 1, 1
+    #             size_hint_y: None
+    #             height: self.texture_size[1] + 20
+    #             # canvas.before:
+    #             #     Color:
+    #             #         rgba: 172/255, 88/255, 89/255, 1
+    #             #     Rectangle:
+    #             #         pos: self.pos
+    #             #         size: self.size
+
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: [0,0,0,60]
+        # AnchorLayout:
+        #     anchor_y: "top"
+        #     size_hint_y: None
+        #     height: 150  # adjust based on label font size
+
+
+        Label:
+            text: "Wash Complete!"
+            font_name: "NexaHeavy"
+            font_size: '32pt'
+            background_normal: ''
+            # background_color: [172/255,88/255,89/255,1]
+            # pos_hint: {'center_x':0.5, 'center_y':0.5}
+            height: self.texture_size[1] + 80
+
+            canvas.before:
+                Color:
+                    rgba: [247/255, 187/255, 112/255, 1]
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+
+        #this needs to be a scan-out function, not simply a button, "SCAN ID TO COMPLETE"
+        Widget:
+            height: 50
+            size_hint_y: None
+
+        Label:
+            text: "Returning to Main Menu in:"
+            font_name: "NexaHeavy"
+            font_size: '24pt'
+            background_normal: ''
+            background_color: [172/255,88/255,89/255,1]
+            # pos_hint: {'center_x':0.5, 'center_y':0.1}
+
+        Label:
+            id: returnToMenuTimer
+            text: "5"
+            font_name: "NexaHeavy"
+            font_size: '24pt'
+            # padding_y: 200
+            background_normal: ''
+            background_color: [172/255,88/255,89/255,1]
+            # pos_hint: {'center_x':0.5, 'center_y':0.1}
+
+            # height: 10
+
+    # Button:
+    #     text: "Return to Main Menu"
+    #     font_name: "NexaHeavy"
+    #     font_size: '32pt'
+    #     background_normal: ''
+    #     background_color: [247/255, 187/255, 112/255, 1]
+    #     size_hint: (1, 0.3)
+    #     pos_hint: {'center_x':0.5, 'bottom':0.0}
+    #     on_release: 
+    #         root.backToMenuButton()
+    #         # app.root.current = 'userIn'
+    #         #root.manager.transition.direction = "down"
+
+# <WasherUseConfigScreen>:
+#     name: "useConfig"
+#     Button:
+#         text: "Test Pump"
+#         font_size: '20pt'
+#         background_color: [1,0,0,1]
+#         size_hint: (0.5, 0.1)
+#         pos_hint: {'center_x':0.5, 'center_y':0.5}
+#         on_release: 
+#             root.test_pump()
+#     Button:
+#         text: "Back"
+#         font_size: '20pt'
+#         background_color: [1,0,0,1]
+#         size_hint: (1.5, 0.1)
+#         pos_hint: {'center_x':0.5, 'top':1.0}
+#         on_release: 
+#             app.root.current = 'main'
+#             #root.manager.transition.direction = "down"
