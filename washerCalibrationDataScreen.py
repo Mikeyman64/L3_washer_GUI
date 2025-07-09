@@ -49,9 +49,6 @@ class NewCalibrationPage(Screen):
 
 
 
-'''
-
-
 
 #import libgpiod_RPI5_manager as gpio_manager
 #import wash_profiles as wp
@@ -78,8 +75,6 @@ chan = AnalogIn(mcp, MCP.P0)
  
 #Create object for LCD I2C device
 lcd = LCD()
- 
-#Variables
 chip_path = "/dev/gpiochip0"
  
 #GPIO Pin Variables
@@ -177,4 +172,4 @@ def start_threads():
     lcd_thread.daemon = True
     monitor_thread.start()
     lcd_thread.start()
-'''
+
