@@ -43,13 +43,16 @@ class GlobalScreenManager(ScreenManager):
         "Date": datetime.now().strftime("01-01-2000")
     })
 
+    inputConcentration = NumericProperty(None)
 
 
 
-    def set_user_id(self, user_id):
-        self.userID = user_id
-        self.DataDict["User_ID"] = user_id
-        print("Set userID: " + self.userID)
+
+
+    # def set_user_id(self, user_id):
+    #     self.userID = user_id
+    #     self.DataDict["User_ID"] = user_id
+    #     print("Set userID: " + self.userID)
 
 
 

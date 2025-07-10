@@ -6,6 +6,8 @@ from kivy.clock import Clock
 from datetime import *
 import wash_profiles as wp 
 from washerGlobals import GSM
+import os
+import random
 
 class WasherScreenCountdown(Screen):
     #on_enter: root.data_log(DataDict) #add data dict with start time and other info
@@ -22,6 +24,19 @@ class WasherScreenCountdown(Screen):
     def on_enter(self, *args):
         gsm = GSM()
         gsm.DataDict['Aborted'] = 'False'
+        self.ids.countdown_gif.opacity = 0
+        self.ids.countdown_gif.disabled = True
+        
+
+
+
+        gif_path = "assets/washing_gifs/faucet.gif"
+        # self.ids.countdown_gif.source = gif_path
+
+        # Wait one frame before setting the GIF
+        Clock.schedule_once(lambda dt: self.show_gif(gif_path), 0)
+
+
 
         # IMMEDIATELY UPON ENTERING THE COUNTDOWN SCREEN WE START THE TIMER!
         self.ids.washTypeLabel.text = "Chosen Profile: " + str(gsm.washType)
@@ -39,6 +54,10 @@ class WasherScreenCountdown(Screen):
         gsm.DataDict["Start_Time"] = datetime.now().strftime("%H"+":%M"+":%S")
         gsm.DataDict["Date"] = datetime.now().strftime("%m-%d-%Y")
 
+    def show_gif(self, gif_path):
+        self.ids.countdown_gif.opacity = 1
+        self.ids.countdown_gif.disabled = False
+        self.ids.countdown_gif.source = gif_path
 
     def update_time(self, *args):
         gsm = GSM()

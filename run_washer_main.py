@@ -28,7 +28,7 @@ from washerConfirmationScreen import ConfirmWashPage
 from washerScreenCountdown import WasherScreenCountdown
 from washerAbortScreen import WasherAbortScreen
 from washerCompleteScreen import WasherCompleteScreen
-from washerCalibrationDataScreen import CalibrationDataPage, NewCalibrationPage
+from washerCalibrationDataScreen import *# CalibrationDataPage, NewCalibrationPage, FillingBeakerPage#, start_threads
 from washerGlobals import GlobalScreenManager
 from kivy.uix.screenmanager import NoTransition 
 
@@ -95,6 +95,9 @@ class Runner(MDApp):
         globalSM.add_widget(BarcodeScreen(name='barcode'))
         globalSM.add_widget(CalibrationDataPage(name='calibrationDataPage'))
         globalSM.add_widget(NewCalibrationPage(name='newCalibPage'))
+        globalSM.add_widget(FillingBeakerPage(name='fillBeakerPage'))
+        globalSM.add_widget(TestConcentrationPage(name='testConcPage'))
+        globalSM.add_widget(AdjustRatePage(name='adjustRatePage'))
         globalSM.add_widget(WashOptionsScreen(name='washOptions'))
         globalSM.add_widget(AddBoardsScreen(name='boards_list'))
         globalSM.add_widget(ConfirmWashPage(name='confirmWashPage'))
@@ -115,6 +118,7 @@ if __name__ == "__main__":
     import traceback
     try:
         Runner().run()
+
     except Exception as e:
         traceback.print_exc()
     # Runner().run()

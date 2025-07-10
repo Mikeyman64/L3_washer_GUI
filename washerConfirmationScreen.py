@@ -56,10 +56,10 @@ class ConfirmWashPage(Screen):
         # self.new_sess()
 
         #debug: print all info:
-        for elem in gsm.DataDict.keys():
-            print(str(elem) + ": " + str(gsm.DataDict[elem]))
+        # for elem in gsm.DataDict.keys():
+        #     print(str(elem) + ": " + str(gsm.DataDict[elem]))
 
 
-        print(" WASH TYPE SAVED: ===================" + gsm.washType)
+        # print(" WASH TYPE SAVED: ===================" + gsm.washType)
         gsm.current = 'washerScreenCountdown'
 
