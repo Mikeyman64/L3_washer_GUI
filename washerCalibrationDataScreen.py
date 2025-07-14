@@ -46,6 +46,47 @@ class CalibrationDataPage(Screen):
         gsm = GSM()
         gsm.current = 'newCalibPage'
 
+
+    # def flow_press():
+        # """
+        # Get Pressure
+        # This function takes the live data from data input objects and
+        # displays them to the LCD object
+        # Returns: none
+        # """
+        # global background_task
+        # global count
+        # while background_task:
+        #     try:
+        #         #Get Water Flow Rate
+        #         time.sleep(.5) #wait half a seond to accumulate edges in countPulse function (another half below)
+        #         """
+        #         Flow calc:
+        #         Freq = 38*Q +-3% (Q = L/min, aka "flow")
+        #         flow = freq/38
+        #         freq = count/1sec
+        #         may need to update this delay or function if this is pulled out on its own
+        #         """
+        #         flow = (count / flowCalFac) #use snapshot of pulse count to determine 
+        #         flowString = "H2O F: %.3f L/min" % (flow)
+        #         lcd.text(flowString,1)
+        #         count = 0
+
+        #         #Get Water Pressure
+        #         rawADC = chan.value*chipDiff
+        #         adcVolt = chan.voltage*0.25
+        #         pressOut = rawADC*d2Mpa
+        #         pressString = "H2O P: %.3f MPa" % (pressOut)
+        #         voltString = "H2O V: %.3f V" % (adcVolt)
+        #         lcd.text(pressString,2)
+        #         #print('Raw ADC Value: ',chan.value)
+        #         #print('ADC Voltage: ' + str(chan.voltage) + 'V')
+        #         time.sleep(0.5)
+        #     except KeyboardInterrupt:
+        #         print('\ncaught keyboard interrupt!, bye')
+        #         #GPIO.cleanup()
+        #         sys.exit()
+
 # =================================================================================
 class NewCalibrationPage(Screen):
     def __init__(self, **kwargs):
@@ -60,6 +101,9 @@ class NewCalibrationPage(Screen):
     def on_pre_enter(self):
         # Clear previous checklist state
         self.ids.checklist_container.clear_widgets()
+
+        # set the value of nominal wash based on wash_profile?
+        self.ids.nominalValue.text = str(WashProfilesWithNominals["TEST"])
         self.current_index = 0
         self.checkboxes = []
 
