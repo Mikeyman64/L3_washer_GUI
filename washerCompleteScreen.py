@@ -7,6 +7,8 @@ from datetime import *
 import wash_profiles as wp 
 from washerGlobals import GSM
 import pyodbc
+import os
+from dotenv import load_dotenv
 
 class WasherCompleteScreen(Screen):
     #on_enter: root.data_log(DataDict) #add data dict with start time and other info
@@ -69,14 +71,24 @@ class WasherCompleteScreen(Screen):
         cursor = None
 
         try:
+            # Retrieve database credentials from environment variables
+            load_dotenv("credentials.env")  # or just load_dotenv() if it's named `.env` in same dir
+
+            server = os.getenv('SERVER')
+            user = os.getenv('UID')
+            password = os.getenv('PWD')
+            database = os.getenv('DATABASE')
+
+            # Connect to the database using pyodbc
             conn = pyodbc.connect(
-                'DRIVER={ODBC Driver 17 for SQL Server};'
-                'SERVER=USW-SQL30003.rootforest.com;'
-                'DATABASE=Oven_Bake_Log;'
-                'UID=OvenBakedUsr;'
-                'PWD=aztmvcjfrizkcpdcehky;'
+                f'DRIVER={{ODBC Driver 17 for SQL Server}};'
+                f'SERVER={server};'
+                f'DATABASE={database};'
+                f'UID={user};'
+                f'PWD={password};'
                 'TrustServerCertificate=yes;'
             )
+
 
             cursor = conn.cursor()
 

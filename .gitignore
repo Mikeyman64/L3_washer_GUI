@@ -1,2 +1,4 @@
 washVenv/
 Washer_log.txt
+.env
+credentials.env

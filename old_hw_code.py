@@ -35,6 +35,7 @@ import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 #import pandas as pd
 import pymssql
+from dotenv import load_dotenv
 import keyboard
 
 #set up SPI comms to MCP Hat (ADC chip for pressure sensor)
@@ -426,11 +427,16 @@ class WasherMenu(ScreenManager):
             for line in file:
                 data.append(line.strip().split(','))
                 
-        conn = pymssql.connect(server='USW-SQL30003.rootforest.com',
-                               user='OvenBakedUsr',
-                               password='aztmvcjfrizkcpdcehky',
-                               database='Oven_Bake_Log',
-                               )
+        # Retrieve database credentials from environment variables
+        load_dotenv("credentials.env")  # or just load_dotenv() if it's named `.env` in same dir
+
+        server = os.getenv('SERVER')
+        user = os.getenv('UID')
+        password = os.getenv('PWD')
+        database = os.getenv('DATABASE')
+
+        # Connect to the database
+        conn = pymssql.connect(server=server, user=user, password=password, database=database)
         cursor = conn.cursor()
         
         #Date/Time is wrong on the IOT network

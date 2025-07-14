@@ -6,7 +6,8 @@ from kivy.clock import Clock
 from datetime import *
 import wash_profiles as wp 
 from washerGlobals import GSM
-# import pymssql # OUTDATED
+from dotenv import load_dotenv
+import os
 import pyodbc
 
 class WasherAbortScreen(Screen):
@@ -66,15 +67,23 @@ class WasherAbortScreen(Screen):
         cursor = None
 
         try:
+            load_dotenv("credentials.env")  # or just load_dotenv() if it's named `.env` in same dir
+
+            server = os.getenv('SERVER')
+            user = os.getenv('UID')
+            password = os.getenv('PWD')
+            database = os.getenv('DATABASE')
+
+            # Connect to the database using pyodbc
             conn = pyodbc.connect(
-                'DrsoRIVER={ODBC Driver 17 for SQL Server};'
-                'SERVER=USW-SQL30003.rootforest.com;'
-                'DATABASE=Oven_Bake_Log;'
-                'UID=OvenBakedUsr;'
-                'PWD=aztmvcjfrizkcpdcehky;'
+                f'DRIVER={{ODBC Driver 17 for SQL Server}};'
+                f'SERVER={server};'
+                f'DATABASE={database};'
+                f'UID={user};'
+                f'PWD={password};'
                 'TrustServerCertificate=yes;'
             )
-            cursor = conn.cur()
+            cursor = conn.cursor()
 
             query = f"INSERT INTO Wash_Log VALUES ({placeholders})"
 
