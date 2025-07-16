@@ -44,7 +44,7 @@ class GlobalScreenManager(ScreenManager):
     })
     
     CalibrateDict = DictProperty({
-        "inputConcentration" = 0,
+        "inputConcentration": 0,
         
         
     
