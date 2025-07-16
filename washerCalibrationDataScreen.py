@@ -11,6 +11,7 @@ from kivy.uix.checkbox import CheckBox
 from kivy.factory import Factory
 import random
 from washerGlobals import GSM
+from sensor_reader import SensorReader  # Import the new class
 import os
 
 
@@ -19,33 +20,77 @@ class CalibrationDataPage(Screen):
         super(CalibrationDataPage, self).__init__(**kwargs)
         self.timer = 0
         self.countdown = 30
+        self.sensor_reader = None
+        self.sensor_updater = None
 
     def on_enter(self):
         self.timer = Clock.schedule_interval(self.update_countdown, 1)
-
+        
+        # self.sensor_reader = SensorReader()
+        
+        #self.sensor_updater = Clock.schedule_interval(self.update_sensor_labels, 0.5)
+        
+        
     def update_countdown(self, dt):
         if self.countdown > 0:
             self.countdown -= 1
         else: # done:
+            '''
             self.timer.cancel()
             self.timer = 0
             self.countdown = 30
+            '''
             self.manager.current = "barcode"
 
     def closeButtonClicked(self):
+        '''
         self.timer.cancel()
         self.timer = 0
         self.countdown = 30
+        '''
         gsm = GSM()
         gsm.current = "barcode"
 
     def newCalibButtonClicked(self):
+        '''
         self.timer.cancel()
         self.timer = 0
         self.countdown = 30
+        '''
         gsm = GSM()
         gsm.current = 'newCalibPage'
+        
+        
+        # ==========================================================
+        # VALIDATE U-NUMBER + 4DIGIT CODE FIRST BEFORE GOING TO THIS PAGE!!!!!!!!
+        # might need CALIBRATE_DB connect to this
+        # 
+        #===========================================================
+        
+        
+    
+    def on_leave(self):
+        if self.timer:
+            self.timer.cancel()
+            self.timer = 0
+            self.countdown = 30
+            
+            '''
+        if self.sensor_updater:
+            self.sensor_updater.cancel()
+        if self.sensor_reader:
+            self.sensor_reader.stop()'''
+            
+            
+    
+    def update_sensor_labels(self, dt):
+        data = self.sensor_reader.get_data()
+        flow = data['flow']
+        pressure = data['pressure']
 
+        self.ids.flowrate_value.text = f"{flow:.3f} L/min"
+        self.ids.pressure_value.text = f"{pressure:.3f} MPa"
+    
 
     # def flow_press():
         # """
@@ -93,7 +138,8 @@ class NewCalibrationPage(Screen):
         super(NewCalibrationPage, self).__init__(**kwargs)
         self.checklist_items = [
             "Beaker Present?",
-            "Turn Valves 1 & 2?",
+            "Turn Valves 1 & 2 to GREEN",
+            "Turn Valves 3 & 4 to RED",
         ]
         self.current_index = 0
         self.checkboxes = []
@@ -104,6 +150,9 @@ class NewCalibrationPage(Screen):
 
         # set the value of nominal wash based on wash_profile?
         self.ids.nominalValue.text = str(WashProfilesWithNominals["TEST"])
+        # ================================================
+        # SET TO THE VALUE OF THE EARLIER CONCENTRATION ! 
+                # ================================================
         self.current_index = 0
         self.checkboxes = []
 
@@ -214,6 +263,7 @@ class FillingBeakerPage(Screen):
             gsm = GSM()
             gsm.current = 'testConcPage'
 
+# =====================================================
 
 class TestConcentrationPage(Screen):
     def __init__(self, **kwargs):
@@ -232,7 +282,7 @@ class TestConcentrationPage(Screen):
     def clear_concentration(self, dt):
         gsm = GSM()
         gsm.inputConcentration = 0
-        self.ids["newConcentration_label"].text = "New Concentration:"
+        self.ids["newConcentration_label"].text = "Current Measured Concentration:"
 
 
     def save_concentration(self, *args):
@@ -274,7 +324,104 @@ class AdjustRatePage(Screen):
     #     gsm = GSM()
     #     gsm.current = "barcode"
 
+'''make a lookup table
+fixed flowrate on the pump.
+flowrate and pressure of WATER are on LCD.
 
+pump stuff goes to database so we can monitor (+- 20% is something bad and we need to change pump)
+
+real time monitoring is important here!
+to get from 13.8 to 15 directly is bad.  need it to be GRADUAL.
+
+[FILL BEAKER BUTTON] here: turn on JUST water for 10 seconds (can be hit multiple times!)
+- regulator
+
+
+
+last measured concentration: we would know avg flow and pressure (from LCD) at that LAST concentration
+
+next, button to turn on water (on lookup table) to determine how much PRESSURE and WATER
+will give us a concentration. until we GET to 15% -> 15.5 -> 16 -> 16.5
+
+need real time way to get to 0.56 (lookup table -> know what pressure and flow rate gives us 0.56)
+
+"TURN VALVE UNTIL FLWO RATE IS X AND PRESSURE IS Y" on lcd screen
+
+- turn water pressure valve CCW = open (to get more water, less concentration)
+- CW is closed (MORE concentration)
+
+0.52 -0.58 ===> Look up the pressure and flow rate that SHOULD match that.
+= the knobs are turned to get to those specific pressures and flow rates.
+
+Within 5-10 % range, you can alert them that it is done and has reached the concentration
+
+
+At the end, [CONFIRM NEW FR and PRessure]: off of the LCD screen (visually)
+
+    <2nd Fill beaker> 10 sec with Soap AND Water, will fill beaker with same flow rate and pump and do the concentration again
+    this will save to the "desired concentration ACTUAL" -> testing what you just changed
+    water pressure (NEW water+soap concentration)
+    
+    Type it in. If not within 10% of 14.4, go back to the earlier page after [OK] button
+    <Current Measured Concentration> =======> redo steps 
+    
+    After second attempt, (which si really weird) debug but also have ability to force
+    skip forward, and accept value (goes to home screen) normal state
+    
+    
+
+
+If this value is [NOT CORRECT]: 
+        ERROR OUT? go to home page. redo again then
+        
+        
+Then new runs will use "measured concentration" on "CALIBRATION DATA PAGE" as 0.54
+
+
+
+CALIBRATION DB: 
+- 
+
+
+
+
+
+****** automatic background portion ********
+
+
+Small white thing (ceramic mug)
+
+sensor at water level- green if water IS at the 10.5 inch depth
+
+from usage or evap the leevl will go down
+at 3am thsi wil turn on and do the relay (relay for pump)
+
+5 sec, 30 sec
+th esoap and open solenoid for water (calibrated to new stuff)
+
+will fill the tank up until the water sensor is back at th eoriginal level. 
+
+THEN turns off instantly
+
+that data: time of 
+
+
+DB: pump flow rate, pressure
+- ensures nothing went wrong
+- if it didn't fill (water level light is on and is fine) 
+- but chancse are you'll lose some amount during the day and ahve to refill
+
+
+
+
+
+
+
+
+
+
+
+'''
 
 
 #import libgpiod_RPI5_manager as gpio_manager

@@ -42,6 +42,14 @@ class GlobalScreenManager(ScreenManager):
         "Aborted": 'false',
         "Date": datetime.now().strftime("01-01-2000")
     })
+    
+    CalibrateDict = DictProperty({
+        "inputConcentration" = 0,
+        
+        
+    
+    
+    })
 
     inputConcentration = NumericProperty(None)
 
