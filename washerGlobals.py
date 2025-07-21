@@ -43,24 +43,17 @@ class GlobalScreenManager(ScreenManager):
         "Date": datetime.now().strftime("01-01-2000")
     })
     
-    CalibrateDict = DictProperty({
+    CalibrateDict = {
         "inputConcentration": 0,
-        
-        
-    
-    
-    })
+        "oldConcentration": 0,
+        "flowRate": None,
+        "pressure": None,
+
+    }
+    CALIBRATION_USERS = {}
 
     inputConcentration = NumericProperty(None)
 
-
-
-
-
-    # def set_user_id(self, user_id):
-    #     self.userID = user_id
-    #     self.DataDict["User_ID"] = user_id
-    #     print("Set userID: " + self.userID)
 
 
 

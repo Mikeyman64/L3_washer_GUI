@@ -162,6 +162,71 @@
                     root.newCalibButtonClicked()
 # =================================================================================
 
+<ValidateCalibUser>:
+    name: "validateCalibUser"
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [50, 15, 50, 15]
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [150,150,150,150]
+            spacing: 15
+            size_hint_y: 0.9
+
+            Label:
+                id: login_label
+                text: 'Enter ID and Passcode'
+                font_name: "NexaHeavy"
+                font_size: 32
+                color: 1,1,1
+
+            MDTextField:
+                id: login_user_input
+                hint_text: "U-number"
+                icon_left: 'account'
+                font_name: "NexaLight"
+                font_size: '20pt'
+                multiline: False
+                on_text_validate:
+                    root.set_element_focus(login_pass_input)
+
+            MDTextField:
+                id: login_pass_input
+                hint_text: "4-digit Passcode"
+                icon_left: 'lock'
+                font_name: "NexaLight"
+                font_size: '20pt'
+                multiline: False
+                password: True
+                on_text_validate:
+                    root.check_credentials()
+
+        BoxLayout:
+            size_hint_y: 0.1
+            padding: [10, 10, 10, 10]
+
+            MDFabButton:
+                text: "Back"
+                icon: "arrow-left"
+                on_release:
+                    app.root.current = "barcode"
+
+
+
+
+
+
+
+
+
+
+
+
+
+# =================================================================================
+
 <NewCalibrationPage>:
     name: "newCalibPage"
     GridLayout:
@@ -377,7 +442,7 @@
     #     cols: 1
     BoxLayout:
         orientation: 'vertical'
-        padding: [15, 15, 15, 35]
+        padding: [15, 15, 15, 15]
         # ===========================
         BoxLayout:
             orientation: 'vertical'
@@ -385,8 +450,16 @@
             size_hint_y: 1.6
 
             Label:
-                id: adjustRateLabel
+                id: desired_conc_label
                 text: "Turn knob CW by 1/2 turn."
+                font_name: "NexaHeavy"
+                font_size: '28pt'
+                font_size: 32
+                color: 1,1,1
+
+            Label:
+                id: adjust_valves_label
+                text: "placeholder"
                 font_name: "NexaHeavy"
                 font_size: '28pt'
                 font_size: 32
@@ -403,30 +476,32 @@
 
 
 
-        # BoxLayout:
-        #     # padding: 20
-        #     spacing: 20
-        #     size_hint_y: 0.5
-        #     orientation: 'horizontal'
-        #     Button:
-        #         text: "Cancel"
-        #         font_name: "NexaHeavy"
-        #         font_size: '24pt'
-        #         background_color: (225/255, 219/255, 210/255, 1)
-        #         on_release: 
-        #             root.cancelButtonClicked()
-        #             #root.manager.transition.direction = "right"
-        Button:
-            id: end_button
-            text: "END"
-            font_name: "NexaHeavy"
-            font_size: '24pt'
-            pos_hint: {'center_x': 0.5}  # <-- this centers the button horizontally
-            size_hint: (0.5, 0.5)
-            background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
-            background_color: [247/255, 187/255, 112/255, 1]
-            on_release: 
-                app.root.current = "barcode"
+        BoxLayout:
+            # padding: 20
+            spacing: 20
+            size_hint_y: 0.5
+            orientation: 'horizontal'
+            Button:
+                id: fill_beaker_button
+                text: "Fill Beaker (Water)"
+                font_name: "NexaHeavy"
+                font_size: '24pt'
+                background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
+                background_color: (225/255, 219/255, 210/255, 1)
+                on_release: 
+                    root.fillBeakerButton()
+                    #root.manager.transition.direction = "right"
+            Button:
+                id: end_button
+                text: "Confirm Flow Rate + Pressure"
+                font_name: "NexaHeavy"
+                font_size: '24pt'
+                # pos_hint: {'center_x': 0.5}  # <-- this centers the button horizontally
+                # size_hint: (0.5, 0.5)
+                background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
+                background_color: [247/255, 187/255, 112/255, 1]
+                on_release: 
+                    app.root.current = "barcode"
                     # root.confirmConcClicked()
 # ===================================================================================
 <WashOptionsScreen>:

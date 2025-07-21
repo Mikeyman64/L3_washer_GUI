@@ -18,8 +18,6 @@ class WasherCompleteScreen(Screen):
         self.timer = 0
         self.countdown = 5
 
-
-
     def on_enter(self, *args):
         # self.data_log_complete(gsm.DataDict)
         Clock.schedule_once(self.data_log_complete, 1)
@@ -74,6 +72,7 @@ class WasherCompleteScreen(Screen):
             # Retrieve database credentials from environment variables
             load_dotenv("credentials.env")  # or just load_dotenv() if it's named `.env` in same dir
 
+            driver = os.getenv('DRIVER')
             server = os.getenv('SERVER')
             user = os.getenv('UID')
             password = os.getenv('PWD')
@@ -81,7 +80,7 @@ class WasherCompleteScreen(Screen):
 
             # Connect to the database using pyodbc
             conn = pyodbc.connect(
-                f'DRIVER={{ODBC Driver 17 for SQL Server}};'
+                f'DRIVER={driver};'
                 f'SERVER={server};'
                 f'DATABASE={database};'
                 f'UID={user};'

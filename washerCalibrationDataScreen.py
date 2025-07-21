@@ -8,10 +8,12 @@ from wash_profiles import WashProfilesWithNominals
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.checkbox import CheckBox
+from kivy.uix.button import Button
 from kivy.factory import Factory
 import random
-from washerGlobals import GSM
-from sensor_reader import SensorReader  # Import the new class
+from washerGlobals import GSM, GlobalScreenManager
+# from sensor_reader import SensorReader  # Import the new class
+import pyodbc
 import os
 
 
@@ -22,6 +24,23 @@ class CalibrationDataPage(Screen):
         self.countdown = 30
         self.sensor_reader = None
         self.sensor_updater = None
+        
+        # conn = pyodbc.connect('calibrate_data.db')
+        # cursor = conn.cursor()
+
+        # cursor.execute('''
+        #     CREATE TABLE IF NOT EXISTS users (
+        #         uNum INTEGER PRIMARY KEY,
+        #         empName TEXT,
+        #         passcode INTEGER)
+        #                ''')
+        
+        # # for i in range()
+        
+        # cursor.execute('''
+        #     INSERT INTO users (uNum, empName, passcode)
+        #     values (?,?,?) 
+        # ''', ())
 
     def on_enter(self):
         self.timer = Clock.schedule_interval(self.update_countdown, 1)
@@ -58,12 +77,12 @@ class CalibrationDataPage(Screen):
         self.countdown = 30
         '''
         gsm = GSM()
-        gsm.current = 'newCalibPage'
+        gsm.current = 'validateCalibUser'
         
         
         # ==========================================================
         # VALIDATE U-NUMBER + 4DIGIT CODE FIRST BEFORE GOING TO THIS PAGE!!!!!!!!
-        # might need CALIBRATE_DB connect to this
+
         # 
         #===========================================================
         
@@ -131,6 +150,87 @@ class CalibrationDataPage(Screen):
         #         print('\ncaught keyboard interrupt!, bye')
         #         #GPIO.cleanup()
         #         sys.exit()
+
+
+class ValidateCalibUser(Screen):
+    def __init__(self, **kwargs):
+        super(ValidateCalibUser, self).__init__(**kwargs)
+        
+    def on_enter(self):
+        # Clear fields
+        self.safe_user_clear(0)
+        # self.ids["login_pass_input"].text = ""
+        # self.ids["login_user_input"].text = ""
+        # self.ids["login_label"].text = "Enter ID and Passcode"
+        # self.set_element_focus(self.ids.login_user_input)
+
+    def set_element_focus(self, element):
+        # element is a self.ids._____ object.
+        element.focus = True
+
+    def safe_user_clear(self, dt):
+        self.set_element_focus(self.ids.login_user_input)
+        self.ids["login_pass_input"].text = ""
+        self.ids["login_user_input"].text = ""
+        self.ids["login_label"].text = "Enter U-Number and Code"
+
+    def check_credentials(self):
+        user_input = self.ids.login_user_input.text.strip().upper()
+        pass_input = self.ids.login_pass_input.text.strip()
+
+        if len(user_input) != 7 or not user_input.startswith('U'):
+            self.ids.login_label.text = "Invalid U-number format"
+            Clock.schedule_once(self.safe_user_clear, 2)
+            return
+
+        if not pass_input.isdigit() or len(pass_input) != 4:
+            self.ids.login_label.text = "Passcode must be 4 digits"
+            Clock.schedule_once(self.safe_user_clear, 2)
+            return
+
+        # Validate against DB!
+        user_map = GlobalScreenManager.CALIBRATION_USERS
+
+        # Check existence
+        if user_input not in user_map:
+            self.ids.login_label.text = "User ID not found"
+            print(f"[ERROR] User {user_input} not in CALIBRATION_USERS")
+            Clock.schedule_once(self.safe_user_clear, 2)
+            return
+        
+        # Strip whitespace from DB-stored code
+        stored_code = user_map[user_input]
+        # if stored_code is None:
+        #     self.ids.login_label.text = "No code assigned to user"
+        #     print(f"[WARN] No code for {user_input}")
+        #     Clock.schedule_once(self.safe_user_clear, 2)
+        #     return
+
+        stored_code = stored_code.strip()
+
+
+        if pass_input == stored_code:
+            print(f"[OK] Auth success: {user_input}")
+            # gsm = GSM()
+            # gsm.userID = user_input
+            # gsm.empName = "Unknown"  # You could also fetch/display full name if needed
+            # gsm.DataDict["User_ID"] = user_input
+            # gsm.badID = False
+
+            self.ids.login_label.text = f"Welcome, {user_input}!"
+            Clock.schedule_once(lambda dt: self.go_to_passed_page(), 2)
+        else:
+            print(f"[ERROR] Wrong passcode for {user_input}")
+            self.ids.login_label.text = "Incorrect passcode"
+            Clock.schedule_once(self.safe_user_clear, 2)
+
+
+    def go_to_passed_page(self):
+        gsm = GSM()
+        gsm.current = 'newCalibPage'
+
+
+
 
 # =================================================================================
 class NewCalibrationPage(Screen):
@@ -296,8 +396,8 @@ class TestConcentrationPage(Screen):
         input_val = float(self.ids[args[0]].text) * 0.01
 
         gsm = GSM()
-        gsm.inputConcentration = input_val
-        print(f"Your concentration is {gsm.inputConcentration}")
+        gsm.CalibrateDict["inputConcentration"] = input_val
+        print(f"Your concentration is {gsm.CalibrateDict["inputConcentration"]}")
         gsm.current = "adjustRatePage"
 
     def cancelButtonClicked(self):
@@ -314,11 +414,36 @@ class TestConcentrationPage(Screen):
 class AdjustRatePage(Screen):
     def __init__(self, **kwargs):
         super(AdjustRatePage, self).__init__(**kwargs)
+        self.timer = 0
+        self.countdown = 3
 
     def on_enter(self):
         gsm = GSM()
-        self.ids["adjustRateLabel"].text = f"Desired concentration: {gsm.inputConcentration}\nTurn knob CW by 1/2 turn."
-        
+        self.ids["desired_conc_label"].text = f"Desired concentration: {gsm.CalibrateDict["inputConcentration"]}"
+        self.ids["adjust_valves_label"].text = "Turn valve until flow rate = XX, pressure = YY."
+    
+    def update_countdown(self, dt):
+        if self.countdown > 0:
+            self.countdown -= 1
+        else: # done:
+            self.timer.cancel()
+            self.set_all_buttons_disabled(False)
+            self.timer = 0
+            self.countdown = 3
+            self.ids.fill_beaker_button.text = "Fill Beaker (Water)"
+            return
+        self.ids.fill_beaker_button.text = str(self.countdown)
+
+    def set_all_buttons_disabled(self, disabled):
+        for widget in self.walk():
+            if isinstance(widget, Button):
+                widget.disabled = disabled
+
+    def fillBeakerButton(self):
+        print ("Filling BEAKER FOR 10 SECONDS (JUST WATER)")
+        self.set_all_buttons_disabled(True) # disable all buttons.
+        self.timer = Clock.schedule_interval(self.update_countdown, 1)
+        self.ids.fill_beaker_button.text = str(self.countdown)
 
     # def cancelButtonClicked(self):
     #     gsm = GSM()
@@ -365,8 +490,8 @@ At the end, [CONFIRM NEW FR and PRessure]: off of the LCD screen (visually)
     Type it in. If not within 10% of 14.4, go back to the earlier page after [OK] button
     <Current Measured Concentration> =======> redo steps 
     
-    After second attempt, (which si really weird) debug but also have ability to force
-    skip forward, and accept value (goes to home screen) normal state
+    After second attempt, (which is really weird and should not happen) have a debug message display, but also have ability to force
+    skip forward instead of going back to the earlier page like before, and accept value (goes to home screen) normal state
     
     
 

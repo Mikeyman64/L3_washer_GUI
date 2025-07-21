@@ -39,6 +39,7 @@ from threading import Thread
 #import gpiod
 #from gpiod.line import Direction, Value, Bias, Edge
 import time, sys, os
+from dotenv import load_dotenv
 
         
 
@@ -94,6 +95,7 @@ class Runner(MDApp):
         # these SHOULD be in the order you want them to appear!!!
         globalSM.add_widget(BarcodeScreen(name='barcode'))
         globalSM.add_widget(CalibrationDataPage(name='calibrationDataPage'))
+        globalSM.add_widget(ValidateCalibUser(name='validateCalibUser'))
         globalSM.add_widget(NewCalibrationPage(name='newCalibPage'))
         globalSM.add_widget(FillingBeakerPage(name='fillBeakerPage'))
         globalSM.add_widget(TestConcentrationPage(name='testConcPage'))
@@ -105,11 +107,64 @@ class Runner(MDApp):
         globalSM.add_widget(WasherAbortScreen(name="washerAbortScreen"))
         globalSM.add_widget(WasherCompleteScreen(name="washerCompleteScreen"))
 
+        self.populateUsersList()
 
+        print(GlobalScreenManager.CALIBRATION_USERS)
 
         globalSM.transition = NoTransition()
 
         return globalSM
+    
+
+    def populateUsersList(self):
+        load_dotenv("credentials.env")  # or just load_dotenv() if it's named `.env` in same dir
+
+        driver = os.getenv('DRIVER')
+        server = os.getenv('SERVER')
+        user = os.getenv('UID')
+        password = os.getenv('PWD')
+        database = os.getenv('DATABASE')
+
+        # Connect to the database using pyodbc
+        conn = pyodbc.connect(
+            f'DRIVER={driver};'
+            f'SERVER={server};'
+            f'DATABASE={database};'
+            f'UID={user};'
+            f'PWD={password};'
+            'TrustServerCertificate=yes;'
+        )
+
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM User_Table')
+ 
+        data = cursor.fetchall()
+ 
+        print("REMOTE_DB =====================================")
+        for row in data:
+            print(row)
+            GlobalScreenManager.CALIBRATION_USERS[row[0]] = row[7]
+            # if row[2] == True: # Basic Access
+            #     GlobalScreenManager.USERS.append(row[0])
+            # if row[3] == True: # Rework Access
+            #     GlobalScreenManager.REWORK_USERS.append(row[0])
+            # if row[4] == True: # BGA Access
+            #     GlobalScreenManager.BGA_USERS.append(row[0])
+            # if row[5] == True: # Admin Access
+            #     GlobalScreenManager.ADMIN_USERS.append(row[0])
+            # if row[6] == True: # Admin Access
+            #     GlobalScreenManager.QA_USERS.append(row[0])
+ 
+        # Close the connection
+        conn.close()
+ 
+        # print("Users:        ",GlobalScreenManager.USERS)
+        # print("Rework Users: ",GlobalScreenManager.REWORK_USERS)
+        # print("BGA Users:    ",GlobalScreenManager.BGA_USERS)
+        # print("Admin Users:  ",GlobalScreenManager.ADMIN_USERS)
+        # print("QA Users:     ",GlobalScreenManager.QA_USERS)
+ 
+
 
     def on_start(self):
         self.root.current = 'barcode'

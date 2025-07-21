@@ -9,6 +9,8 @@ from washerGlobals import GSM
 from dotenv import load_dotenv
 import os
 import pyodbc
+import sqlite3
+
 
 class WasherAbortScreen(Screen):
     #on_enter: root.data_log(DataDict) #add data dict with start time and other info
@@ -69,6 +71,7 @@ class WasherAbortScreen(Screen):
         try:
             load_dotenv("credentials.env")  # or just load_dotenv() if it's named `.env` in same dir
 
+            driver = os.getenv('DRIVER')
             server = os.getenv('SERVER')
             user = os.getenv('UID')
             password = os.getenv('PWD')
@@ -76,7 +79,7 @@ class WasherAbortScreen(Screen):
 
             # Connect to the database using pyodbc
             conn = pyodbc.connect(
-                f'DRIVER={{ODBC Driver 17 for SQL Server}};'
+                f'DRIVER={driver};'
                 f'SERVER={server};'
                 f'DATABASE={database};'
                 f'UID={user};'
