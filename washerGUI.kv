@@ -147,7 +147,8 @@
                 text: "Close"
                 font_name: "NexaHeavy"
                 font_size: '24pt'
-                background_color: (225/255, 219/255, 210/255, 1)
+                background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
+                background_color: (170/255, 170/255, 170/255, 1)
                 on_release: 
                     root.closeButtonClicked()
                     #root.manager.transition.direction = "right"
@@ -294,7 +295,8 @@
                 text: "Cancel"
                 font_name: "NexaHeavy"
                 font_size: '24pt'
-                background_color: (225/255, 219/255, 210/255, 1)
+                background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
+                background_color: (170/255, 170/255, 170/255, 1)
                 on_release: 
                     root.cancelButtonClicked()
                     #root.manager.transition.direction = "right"
@@ -420,7 +422,8 @@
                 text: "Cancel"
                 font_name: "NexaHeavy"
                 font_size: '24pt'
-                background_color: (225/255, 219/255, 210/255, 1)
+                background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
+                background_color: (170/255, 170/255, 170/255, 1)
                 on_release: 
                     root.cancelButtonClicked()
                     #root.manager.transition.direction = "right"
@@ -604,12 +607,15 @@
                 id: board_backButton
                 font_name: "NexaHeavy"
                 font_size:24
+                background_normal: '' # MUST do this to prevent grey
+                background_color: (170/255,170/255,170/255,1)
                 text: "Back"
                 on_release: root.backButtonClicked() 
             Button:
                 id: board_clearAll
                 font_name: "NexaHeavy"
                 font_size:24
+                background_normal: '' # MUST do this to prevent grey
                 background_color: (172/255,88/255,89/255,1)
                 text: "Clear All"
                 on_release: root.clearAllButton() 

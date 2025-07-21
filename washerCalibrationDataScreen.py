@@ -345,14 +345,11 @@ class FillingBeakerPage(Screen):
         # DISPLAY A RUNNING LCD FEED FOR LIVE FLOW RATE AND LIVE WATER PRESSURE!!!!
     
 
-
     def show_gif(self, gif_path):
         self.ids.waiting_gif.opacity = 1
         self.ids.waiting_gif.disabled = False
         self.ids.waiting_gif.source = gif_path
     
-
-
     def update_countdown(self, dt):
         if self.countdown > 0:
             self.countdown -= 1
