@@ -28,16 +28,15 @@ from washerConfirmationScreen import ConfirmWashPage
 from washerScreenCountdown import WasherScreenCountdown
 from washerAbortScreen import WasherAbortScreen
 from washerCompleteScreen import WasherCompleteScreen
-from washerCalibrationDataScreen import *# CalibrationDataPage, NewCalibrationPage, FillingBeakerPage#, start_threads
+from washerCalibrationDataScreen import * # CalibrationDataPage, NewCalibrationPage, FillingBeakerPage#, start_threads
 from washerGlobals import GlobalScreenManager
 from kivy.uix.screenmanager import NoTransition 
-
-
 
 from datetime import datetime
 from threading import Thread
 #import gpiod
 #from gpiod.line import Direction, Value, Bias, Edge
+import pymssql 
 import time, sys, os
 from dotenv import load_dotenv
 
@@ -69,6 +68,7 @@ class Runner(MDApp):
 
 
     def build(self):
+        globalSM = GlobalScreenManager()
         Window.size = (1024, 600)
 #        LabelBase.register(name='NexaHeavy', fn_regular='C:/Users/U313773/Documents/WasherGUI/washer-venv/fonts/Nexa-Heavy.ttf')
 #        LabelBase.register(name='NexaLight', fn_regular='C:/Users/U313773/Documents/WasherGUI/washer-venv/fonts/Nexa-ExtraLight.ttf')
@@ -86,16 +86,19 @@ class Runner(MDApp):
 
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Orange"
-        # Window.size = (1024, 500)
+         # Set colors explicitly (optional but helpful)
+        # self.theme_cls.text_color = [1, 1, 1, 1]  # white
+        # self.theme_cls.disabled_hint_text_color = [1, 1, 1, 0.6]
+
 
         Builder.load_file('washerGUI.kv')
 
         # return sm
-        globalSM = GlobalScreenManager()
-        # these SHOULD be in the order you want them to appear!!!
         globalSM.add_widget(BarcodeScreen(name='barcode'))
+        globalSM.add_widget(SetTimeDeltaPage(name='setTimeDeltaPage'))
         globalSM.add_widget(CalibrationDataPage(name='calibrationDataPage'))
         globalSM.add_widget(ValidateCalibUser(name='validateCalibUser'))
+        globalSM.add_widget(InputSolutionTankConcentration(name="inputSolutionTankConcentration"))
         globalSM.add_widget(NewCalibrationPage(name='newCalibPage'))
         globalSM.add_widget(FillingBeakerPage(name='fillBeakerPage'))
         globalSM.add_widget(TestConcentrationPage(name='testConcPage'))
@@ -106,6 +109,9 @@ class Runner(MDApp):
         globalSM.add_widget(WasherScreenCountdown(name='washerScreenCountdown'))
         globalSM.add_widget(WasherAbortScreen(name="washerAbortScreen"))
         globalSM.add_widget(WasherCompleteScreen(name="washerCompleteScreen"))
+        # ...
+        # ...
+        # When adding more pages, you MUST add it by Python classname and also reference it with the name attribute from the .kv file.
 
         self.populateUsersList()
 
@@ -126,13 +132,19 @@ class Runner(MDApp):
         database = os.getenv('DATABASE')
 
         # Connect to the database using pyodbc
-        conn = pyodbc.connect(
-            f'DRIVER={driver};'
-            f'SERVER={server};'
-            f'DATABASE={database};'
-            f'UID={user};'
-            f'PWD={password};'
-            'TrustServerCertificate=yes;'
+        # conn = pyodbc.connect(
+        #     f'DRIVER={driver};'
+        #     f'SERVER={server};'
+        #     f'DATABASE={database};'
+        #     f'UID={user};'
+        #     f'PWD={password};'
+        #     'TrustServerCertificate=yes;'
+        # )
+        conn = pymssql.connect(
+            server=server,
+            user=user,
+            password=password,
+            database=database
         )
 
         cursor = conn.cursor()
@@ -142,8 +154,8 @@ class Runner(MDApp):
  
         print("REMOTE_DB =====================================")
         for row in data:
-            print(row)
-            GlobalScreenManager.CALIBRATION_USERS[row[0]] = row[7]
+            # print(row)
+            GlobalScreenManager.CALIBRATION_USERS[row[0]] = row[1:]
             # if row[2] == True: # Basic Access
             #     GlobalScreenManager.USERS.append(row[0])
             # if row[3] == True: # Rework Access

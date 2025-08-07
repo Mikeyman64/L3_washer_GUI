@@ -37,38 +37,72 @@ class BarcodeScreen(Screen):
         gsm = GSM()
 
         scanned_text = self.ids[args[1]].text
-        gsm.userID = gsm.DataDict[args[0]] = scanned_text
+        # gsm.userID = gsm.DataDict[args[0]] = scanned_text
+        scanned_text_cleaned = scanned_text.strip()
+        if scanned_text_cleaned[0] == "U" and len(scanned_text_cleaned) == 7: #name other requirements for the U Number here
 
-        if len(gsm.userID) < 1:
-            gsm.userID = "null"
-
-        # regex to check if the barcode scanned is a U-number
-
-        if gsm.userID[0] == 'U' and len(gsm.userID) == 7:
             found = False
-            with open('emp_name.txt', 'r') as f:
-                for line in f:
-                    parts = line.strip().split(',')
-                    if gsm.userID == parts[0]:
-                        gsm.badID = False
-                        gsm.empName = parts[1]
-                        gsm.DataDict["User_ID"] = gsm.userID
+            
+            # check if in database.
+            if scanned_text_cleaned in gsm.CALIBRATION_USERS.keys():
+                # valid: 
+                gsm.badID = False
+                gsm.userID = scanned_text_cleaned
+                gsm.empName = gsm.CALIBRATION_USERS[scanned_text_cleaned][0]
+                gsm.DataDict["User_ID"] = gsm.userID
 
-                        #if found User based on valid U-Number, move to next screen.
-                        print(f"[OK] Found user {gsm.userID}, emp name: {gsm.empName}")
-                        self.ids[args[2]].text = f"Welcome, {gsm.empName}!"
-                        Clock.schedule_once(lambda dt: self.goToWashOptions(), 1)
-                        found = True
-                        break
+                #if found User based on valid U-Number, move to next screen.
+                print(f"[OK] Found user {gsm.userID}, emp name: {gsm.empName}")
+                self.ids[args[2]].text = f"Welcome, {gsm.empName}!"
+                Clock.schedule_once(lambda dt: self.goToWashOptions(), 1)
+                found = True
+                
+
 
             if not found:
-                print(f"[ERROR] User ID {gsm.userID} not found in emp_name.txt")
+                print(f"[ERROR] User ID {gsm.userID} not found in database")
                 self.ids[args[2]].text = "User not found. Try again"
                 Clock.schedule_once(self.safe_user_clear, 2)
-
         else:
             print(f"[ERROR] Invalid format for scanned ID: {gsm.userID}")
             gsm.badID = True
             self.ids[args[2]].text = "Invalid ID. Try again"
             Clock.schedule_once(self.safe_user_clear, 2)
+        # if len(gsm.userID) < 1:
+        #     gsm.userID = "null"
+
+        # regex to check if the barcode scanned is a U-number
+
+        # if gsm.userID[0] == 'U' and len(gsm.userID) == 7:
+        #     found = False
+            
+
+            
+            
+            
+        #     with open('emp_name.txt', 'r') as f:
+        #         for line in f:
+        #             parts = line.strip().split(',')
+        #             if gsm.userID == parts[0]:
+        #                 gsm.badID = False
+        #                 gsm.empName = parts[1]
+        #                 gsm.DataDict["User_ID"] = gsm.userID
+
+        #                 #if found User based on valid U-Number, move to next screen.
+        #                 print(f"[OK] Found user {gsm.userID}, emp name: {gsm.empName}")
+        #                 self.ids[args[2]].text = f"Welcome, {gsm.empName}!"
+        #                 Clock.schedule_once(lambda dt: self.goToWashOptions(), 1)
+        #                 found = True
+        #                 break
+
+        #     if not found:
+        #         print(f"[ERROR] User ID {gsm.userID} not found in emp_name.txt")
+        #         self.ids[args[2]].text = "User not found. Try again"
+        #         Clock.schedule_once(self.safe_user_clear, 2)
+
+        # else:
+        #     print(f"[ERROR] Invalid format for scanned ID: {gsm.userID}")
+        #     gsm.badID = True
+        #     self.ids[args[2]].text = "Invalid ID. Try again"
+        #     Clock.schedule_once(self.safe_user_clear, 2)
 

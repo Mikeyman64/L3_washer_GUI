@@ -8,7 +8,7 @@ import wash_profiles as wp
 from washerGlobals import GSM
 from dotenv import load_dotenv
 import os
-import pyodbc
+import pymssql
 import sqlite3
 
 
@@ -78,13 +78,19 @@ class WasherAbortScreen(Screen):
             database = os.getenv('DATABASE')
 
             # Connect to the database using pyodbc
-            conn = pyodbc.connect(
-                f'DRIVER={driver};'
-                f'SERVER={server};'
-                f'DATABASE={database};'
-                f'UID={user};'
-                f'PWD={password};'
-                'TrustServerCertificate=yes;'
+            # conn = pyodbc.connect(
+            #     f'DRIVER={driver};'
+            #     f'SERVER={server};'
+            #     f'DATABASE={database};'
+            #     f'UID={user};'
+            #     f'PWD={password};'
+            #     'TrustServerCertificate=yes;'
+            # )
+            conn = pymssql.connect(
+                server=server,
+                user=user,
+                password=password,
+                database=database
             )
             cursor = conn.cursor()
 
@@ -98,9 +104,12 @@ class WasherAbortScreen(Screen):
 
             cursor.execute(query, values)
             conn.commit()
+            
+        except pymssql.InterfaceError:
+            print("A MSSQLDriverException has been caught.")
 
-        except pyodbc.Error as e:
-            print("Database Error:", e)
+        except pymssql.DatabaseError:
+            print("A MSSQLDatabaseException has been caught.")
 
         finally:
             if cursor:

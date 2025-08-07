@@ -4,7 +4,7 @@ from kivy.uix.screenmanager import Screen
 # from kivymd.app import MDApp
 from kivy.clock import Clock
 from datetime import *
-from wash_profiles import WashProfilesWithNominals
+# from wash_profiles import WashProfilesWithNominals
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.checkbox import CheckBox
@@ -13,8 +13,10 @@ from kivy.factory import Factory
 import random
 from washerGlobals import GSM, GlobalScreenManager
 # from sensor_reader import SensorReader  # Import the new class
-import pyodbc
+
+import pymssql
 import os
+import csv
 
 
 class CalibrationDataPage(Screen):
@@ -25,30 +27,18 @@ class CalibrationDataPage(Screen):
         self.sensor_reader = None
         self.sensor_updater = None
         
-        # conn = pyodbc.connect('calibrate_data.db')
-        # cursor = conn.cursor()
-
-        # cursor.execute('''
-        #     CREATE TABLE IF NOT EXISTS users (
-        #         uNum INTEGER PRIMARY KEY,
-        #         empName TEXT,
-        #         passcode INTEGER)
-        #                ''')
-        
-        # # for i in range()
-        
-        # cursor.execute('''
-        #     INSERT INTO users (uNum, empName, passcode)
-        #     values (?,?,?) 
-        # ''', ())
 
     def on_enter(self):
         self.timer = Clock.schedule_interval(self.update_countdown, 1)
+        self.populate_readout_values()
         
         # self.sensor_reader = SensorReader()
         
         #self.sensor_updater = Clock.schedule_interval(self.update_sensor_labels, 0.5)
-        
+    
+    def populate_readout_values(self):
+        gsm = GSM()
+        self.ids.concentration_value.text = str(gsm.CalibrateDict["oldConcentration"]) # must cast the 0.45 concentration value into a string!
         
     def update_countdown(self, dt):
         if self.countdown > 0:
@@ -150,7 +140,48 @@ class CalibrationDataPage(Screen):
         #         print('\ncaught keyboard interrupt!, bye')
         #         #GPIO.cleanup()
         #         sys.exit()
+# =================================================================
+class SetTimeDeltaPage(Screen):
+    def __init__(self, **kwargs):
+        super(SetTimeDeltaPage, self).__init__(**kwargs)
 
+    def on_enter(self):
+        self.reset_text_labels(0)
+        
+    def set_element_focus(self, element):
+        # element is a self.ids._____ object.
+        element.focus = True
+
+    def reset_text_labels(self, dt):
+        self.set_element_focus(self.ids.input_delta_time)
+        self.ids["input_delta_time"].text = ""
+        self.ids["delta_time_password"].text = ""
+        self.ids["DeltaTimeTitle"].text = "Set Delta Time (Days)"
+
+    def check_delta_time(self):
+        gsm = GSM()
+        time_input = self.ids.input_delta_time.text.strip()
+        pass_input = self.ids.delta_time_password.text.strip()
+
+         
+        # TEMPORARILY HARDCODE AND VALIDATE AGAINST A HARDCODED PASSWORD: 
+        # (not yet in sql, just a global!)
+        if pass_input != gsm.deltaPassword:
+            self.ids.DeltaTimeTitle.text = "Incorrect password!"
+            Clock.schedule_once(self.reset_text_labels, 1.5)
+        else:
+            old_dt = gsm.deltaT
+            gsm.deltaT = time_input
+            print(f"Changing DT from {old_dt} to {gsm.deltaT}!")
+            self.ids.DeltaTimeTitle.text = f"Setting DT to {gsm.deltaT}!"
+            Clock.schedule_once(self.reset_text_labels, 4.5)
+            gsm.current = "barcode"
+
+
+
+
+
+# =================================================================
 
 class ValidateCalibUser(Screen):
     def __init__(self, **kwargs):
@@ -187,7 +218,6 @@ class ValidateCalibUser(Screen):
             self.ids.login_label.text = "Passcode must be 4 digits"
             Clock.schedule_once(self.safe_user_clear, 2)
             return
-
         # Validate against DB!
         user_map = GlobalScreenManager.CALIBRATION_USERS
 
@@ -199,14 +229,15 @@ class ValidateCalibUser(Screen):
             return
         
         # Strip whitespace from DB-stored code
-        stored_code = user_map[user_input]
+        stored_user = user_map[user_input]
         # if stored_code is None:
         #     self.ids.login_label.text = "No code assigned to user"
         #     print(f"[WARN] No code for {user_input}")
         #     Clock.schedule_once(self.safe_user_clear, 2)
         #     return
 
-        stored_code = stored_code.strip()
+        stored_code = stored_user[6]
+        stored_name = stored_user[0]
 
 
         if pass_input == stored_code:
@@ -217,7 +248,7 @@ class ValidateCalibUser(Screen):
             # gsm.DataDict["User_ID"] = user_input
             # gsm.badID = False
 
-            self.ids.login_label.text = f"Welcome, {user_input}!"
+            self.ids.login_label.text = f"Welcome, {stored_name}!"
             Clock.schedule_once(lambda dt: self.go_to_passed_page(), 2)
         else:
             print(f"[ERROR] Wrong passcode for {user_input}")
@@ -227,13 +258,40 @@ class ValidateCalibUser(Screen):
 
     def go_to_passed_page(self):
         gsm = GSM()
-        gsm.current = 'newCalibPage'
+        gsm.current = 'inputSolutionTankConcentration' # before calib
 
 
+
+
+
+
+class InputSolutionTankConcentration(Screen):
+    def __init__(self, **kw):
+        super(InputSolutionTankConcentration, self).__init__(**kw)
+
+    def on_enter(self):
+        # Clear fields
+        self.safe_input_clear(0)
+
+    def set_element_focus(self, element):
+        # element is a self.ids._____ object.
+        element.focus = True
+
+    def safe_input_clear(self, dt):
+        self.set_element_focus(self.ids.tankSolution_value)
+        self.ids["tankSolution_label"].text = "Enter Tank Solution Concentration:\n(ex: 0.15)"
+    
+    def saveTankSolution(self):
+        gsm = GSM()
+        tankSolution = float(self.ids.tankSolution_value.text.strip())
+        gsm.CalibrateDict["solutionTankConcentration"] = tankSolution
+        gsm.current = "newCalibPage"
 
 
 # =================================================================================
 class NewCalibrationPage(Screen):
+
+    # Engineering Fill _ taking beaker. can't measure it One min fill.  
     def __init__(self, **kwargs):
         super(NewCalibrationPage, self).__init__(**kwargs)
         self.checklist_items = [
@@ -245,14 +303,15 @@ class NewCalibrationPage(Screen):
         self.checkboxes = []
 
     def on_pre_enter(self):
+        gsm = GSM()
         # Clear previous checklist state
         self.ids.checklist_container.clear_widgets()
 
         # set the value of nominal wash based on wash_profile?
-        self.ids.nominalValue.text = str(WashProfilesWithNominals["TEST"])
+        self.ids.nominalValue.text = str(gsm.CalibrateDict["incomingWaterSoapConcentration"])
         # ================================================
         # SET TO THE VALUE OF THE EARLIER CONCENTRATION ! 
-                # ================================================
+        # ================================================
         self.current_index = 0
         self.checkboxes = []
 
@@ -379,7 +438,8 @@ class TestConcentrationPage(Screen):
     def clear_concentration(self, dt):
         gsm = GSM()
         gsm.inputConcentration = 0
-        self.ids["newConcentration_label"].text = "Current Measured Concentration:"
+        self.ids["newConcentration_label"].text = "Current Measured Beaker Concentration:"
+
 
 
     def save_concentration(self, *args):
@@ -390,16 +450,22 @@ class TestConcentrationPage(Screen):
             self.refocus_input_field(0.01)
             return
         
-        input_val = float(self.ids[args[0]].text) * 0.01
+        input_val = float(self.ids[args[0]].text)
+        if not 0 <= input_val <= 1:
+            self.ids["newConcentration_label"].text = "Value must be between 0 and 1!"
+            Clock.schedule_once(self.clear_concentration, 2)
+            self.refocus_input_field(0.01)
+            return
+        
 
         gsm = GSM()
-        gsm.CalibrateDict["inputConcentration"] = input_val
-        print(f"Your concentration is {gsm.CalibrateDict["inputConcentration"]}")
+        gsm.CalibrateDict["targetConcentration"] = input_val
+        print(f"Your concentration is {gsm.CalibrateDict["measuredConcentration"]}")
         gsm.current = "adjustRatePage"
 
     def cancelButtonClicked(self):
         gsm = GSM()
-        gsm.inputConcentration = 0
+        gsm.CalibrateDict["targetConcentration"] = 0
         gsm.current = "barcode"
 
     # def confirmConcClicked(self):
@@ -413,11 +479,76 @@ class AdjustRatePage(Screen):
         super(AdjustRatePage, self).__init__(**kwargs)
         self.timer = 0
         self.countdown = 3
+        self.lookup_table_path = "concentration_lookup_table.csv"  # path to the CSV file
 
     def on_enter(self):
         gsm = GSM()
-        self.ids["desired_conc_label"].text = f"Desired concentration: {gsm.CalibrateDict["inputConcentration"]}"
-        self.ids["adjust_valves_label"].text = "Turn valve until flow rate = XX, pressure = YY."
+        self.ids["desired_conc_label"].text = f"Measured concentration: {gsm.CalibrateDict["targetConcentration"]}"
+    
+        '''
+        Start reading the values.
+        '''
+
+        pressure, flow = self.lookup_pressure_flow(self.lookup_table_path, gsm.CalibrateDict["targetConcentration"])
+        self.expected_pressure = pressure
+        self.expected_flow = flow
+
+        # Display instruction
+        self.ids.adjust_valves_label.text = (
+            f"Turn valves until:\nFlow rate = {flow:.2f} L/min\n"
+            f"Pressure = {pressure:.2f} PSI"
+        )
+
+
+        '''
+        If OFFF from nomianl of 15, and has been X days, this should ask you to ADJUST THE PRESSURE A CERTAIN WAY.
+         inauguration day of August 1.  +7: Will request to ADJUST PRESSURE 
+         
+         
+         
+         formula: over 7 days : calculate to what percent to increase to get back up to nominal of 15.
+
+         delta of change over time: integrate deltas OVER the dt of 7. d% to get a how do i change this to get back to 
+         - adjust pressure to 39 or something. RESULT OF FUNCTION IS A PRESSURE (maybe flow rate) to get
+
+
+         ex: 14.9 -> 15 % 
+         if you have downward trend across x days, formula gives us a way to change pressure so it changes gradually.
+
+
+         ZZoomin on lookup: percent delta
+         across 7 -> 0.1%
+         based on that delta you ned to change pressure 
+
+
+         should X days be a user input, or an ADMIN ADJUSTED amount of time. 
+         
+         
+         '''
+
+
+
+    def lookup_pressure_flow(self, csv_path, target_concentration):
+        closest_row = None
+        closest_diff = float('inf')
+
+        with open(csv_path, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                conc = float(row['concentration'])
+                diff = abs(conc - target_concentration)
+                if diff < closest_diff:
+                    closest_diff = diff
+                    closest_row = row
+
+        if closest_row:
+            pressure = float(closest_row['pressure_psi'])
+            flow = float(closest_row['flow_lpm'])
+            return pressure, flow
+        else:
+            raise ValueError("No data found in CSV.")
+
+
     
     def update_countdown(self, dt):
         if self.countdown > 0:
@@ -441,6 +572,13 @@ class AdjustRatePage(Screen):
         self.set_all_buttons_disabled(True) # disable all buttons.
         self.timer = Clock.schedule_interval(self.update_countdown, 1)
         self.ids.fill_beaker_button.text = str(self.countdown)
+    
+    def confirmConcClicked(self):
+        # behavior for when we move on?
+        gsm = GSM()
+        gsm.CalibrateDict["oldConcentration"] = gsm.CalibrateDict["targetConcentration"]
+        gsm.CalibrateDict["targetConcentration"] = 0
+        gsm.current = "barcode"
 
     # def cancelButtonClicked(self):
     #     gsm = GSM()

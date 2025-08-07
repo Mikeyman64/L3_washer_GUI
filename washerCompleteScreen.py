@@ -6,7 +6,8 @@ from kivy.clock import Clock
 from datetime import *
 import wash_profiles as wp 
 from washerGlobals import GSM
-import pyodbc
+# import pyodbc
+import pymssql
 import os
 from dotenv import load_dotenv
 
@@ -72,22 +73,27 @@ class WasherCompleteScreen(Screen):
             # Retrieve database credentials from environment variables
             load_dotenv("credentials.env")  # or just load_dotenv() if it's named `.env` in same dir
 
-            driver = os.getenv('DRIVER')
             server = os.getenv('SERVER')
             user = os.getenv('UID')
             password = os.getenv('PWD')
             database = os.getenv('DATABASE')
 
             # Connect to the database using pyodbc
-            conn = pyodbc.connect(
-                f'DRIVER={driver};'
-                f'SERVER={server};'
-                f'DATABASE={database};'
-                f'UID={user};'
-                f'PWD={password};'
-                'TrustServerCertificate=yes;'
+            # conn = pyodbc.connect(
+            #     f'DRIVER={driver};'
+            #     f'SERVER={server};'
+            #     f'DATABASE={database};'
+            #     f'UID={user};'
+            #     f'PWD={password};'
+            #     'TrustServerCertificate=yes;'
+            # )
+            conn = pymssql.connect(
+                server=server,
+                user=user,
+                password=password,
+                database=database
             )
-
+            
 
             cursor = conn.cursor()
 
@@ -109,8 +115,11 @@ class WasherCompleteScreen(Screen):
             cursor.execute(query, values)
             conn.commit()
 
-        except pyodbc.Error as e:
-            print("Database Error:", e)
+        except pymssql.InterfaceError:
+            print("A MSSQLDriverException has been caught.")
+
+        except pymssql.DatabaseError:
+            print("A MSSQLDatabaseException has been caught.")
 
         finally:
             if cursor:

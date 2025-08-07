@@ -44,12 +44,23 @@ class GlobalScreenManager(ScreenManager):
     })
     
     CalibrateDict = {
-        "inputConcentration": 0,
+        "solutionTankConcentration": 0.16,
+        "incomingWaterSoapConcentration": 0.14,  # defined COMPLETELY by water pressure which then affects flow rate.
+        "measuredConcentration": 0.133,
+
+        "targetConcentration": 0,
         "oldConcentration": 0,
         "flowRate": None,
         "pressure": None,
-
     }
+    deltaT = 7 #may need to push this to database so it can save even past sessions
+    # value of solution tank -> on a date, what is the SOLUTION_TANK_CONCENTRATION -> if we took it today.? beaker and hit wash cycle 150F at 1 min, dispenses beaker with solution.
+    #  Daily datat input : current tank solution
+    deltaPassword = "time123"
+
+    # 
+
+
     CALIBRATION_USERS = {}
 
     inputConcentration = NumericProperty(None)

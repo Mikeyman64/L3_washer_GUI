@@ -62,6 +62,163 @@
                 on_release:
                     app.root.current = "calibrationDataPage"
 
+            MDFabButton:
+                text: "timeDelta"
+                icon: "clock"  # Material Design icon name for gear
+                text_color: 1, 1, 1, 1  # White text
+                theme_bg_color: "Custom"
+                md_bg_color: [247/255, 187/255, 112/255, 1]
+                theme_text_color: "Custom"
+                radius: [20, 20, 20, 20]  # Rounded corners
+                size_hint: None, None
+                size: 70, 70
+                on_release:
+                    app.root.current = "setTimeDeltaPage"
+# =================================================================
+
+<SetTimeDeltaPage>:
+    name: "setTimeDeltaPage"
+    GridLayout:
+        cols: 1
+        Label:
+            id: DeltaTimeTitle
+            text: "Set Delta Time"
+            font_name: "NexaHeavy"
+            font_size: '32pt'
+        # ===========================
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [150,150,150,150]
+            spacing: 15
+            size_hint_y: 0.9
+
+            # MDTextField:
+            #     hint_text: "hint text here"
+            #     text_color: 1, 1, 1, 1  # white
+
+            #     helper_text: "Message"
+            #     helper_text_mode: "on_focus"  # or 'persistent' to always show
+            #     text_color_hint: 1, 1, 1, 1  # Pure white (RGBA)
+            #     line_color_normal: 1, 1, 1, 0.5
+            #     line_color_focus: 1, 1, 1, 1
+
+            MDTextField:
+                id: input_delta_time
+                # hint_text: "Time (in Days)"
+                helper_text: "Enter number of days"
+                helper_text_mode: "persistent"
+                halign: "center"
+                mode: "outlined"
+                size_hint_x: 0.6
+                size_hint_y: None
+                multiline: False
+                height: "60dp"
+                pos_hint: {"center_x": 0.5}
+                font_name: "NexaLight"
+                font_size: "20sp"
+                text_color_hint: 1, 1, 1, 0.6  # Make hint text visible
+                helper_text_mode: "on_focus"
+                on_text_validate:
+                    root.set_element_focus(delta_time_password)
+
+            MDTextField:
+                id: delta_time_password
+                # hint_text: "4-digit Passcode"
+                helper_text: "Enter Admin PW"
+                helper_text_mode: "persistent"
+                halign: "center"
+                mode: "outlined"
+                size_hint_x: 0.6
+                multiline: False
+                size_hint_y: None
+                height: "60dp"
+                pos_hint: {"center_x": 0.5}
+                font_name: "NexaLight"
+                font_size: "20sp"
+                password: True
+                text_color_hint: 1, 1, 1, 0.6
+                helper_text_mode: "on_focus"
+                on_text_validate:
+                    root.check_delta_time()
+            # MDTextField:
+            #     id: input_delta_time
+            #     size_hint_y: None
+            #     height: "48dp"
+            #     halign: "center"
+            #     hint_text: "Time (in Days)"
+            #     font_name: "NexaLight"
+            #     font_size: "20pt"
+            #     multiline: False
+            #     on_text_validate:
+            #         root.set_element_focus(delta_time_password)
+
+            # MDTextField:
+            #     id: delta_time_password
+            #     size_hint_y: None
+            #     height: "48dp"
+            #     halign: "center"
+            #     hint_text: "4-digit Passcode"
+            #     font_name: "NexaLight"
+            #     font_size: "20pt"
+            #     multiline: False
+            #     password: True
+            #     on_text_validate:
+            #         root.check_delta_time()
+
+            # MDTextField:
+            #     id: input_delta_time
+            #     halign: 'center'
+            #     hint_text: "Time (in Days)"
+            #     text_color_hint: 1, 1, 1, 0.5
+            #     icon_left: 'clock'
+            #     font_name: "NexaLight"
+            #     font_size: '20pt'
+            #     multiline: False
+            #     on_text_validate:
+            #         root.set_element_focus(delta_time_password)
+
+            # MDTextField:
+            #     id: delta_time_password
+            #     halign: 'center'
+            #     hint_text: "4-digit Passcode"
+            #     text_color_hint: 1, 1, 1, 0.5
+            #     icon_left: 'lock'
+            #     font_name: "NexaLight"
+            #     font_size: '20pt'
+            #     multiline: False
+            #     password: True
+            #     on_text_validate:
+            #         root.check_delta_time()
+        # ===================================
+
+        BoxLayout:
+            padding: 20
+            spacing: 20
+            size_hint_y: 0.5
+            orientation: 'horizontal'
+            Button:
+                text: "Cancel"
+                font_name: "NexaHeavy"
+                font_size: '24pt'
+                background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
+                background_color: (170/255, 170/255, 170/255, 1)
+                on_release: 
+                    # root.closeButtonClicked()
+                    app.root.current = "barcode"
+                    #root.manager.transition.direction = "right"
+            Button:
+                text: "Confirm"
+                font_name: "NexaHeavy"
+                font_size: '24pt'
+                background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
+                background_color: [247/255, 187/255, 112/255, 1]
+                on_release: 
+                    root.check_delta_time()
+                    #add yes/no confirmation pop-up
+                    # app.root.current = "setTimeDeltaPage"
+                    # root.newCalibButtonClicked()
+# =================================================================================
 
 
 
@@ -125,7 +282,7 @@
                 size_hint_x: 0.3
             Label:
                 id: concentration_label
-                text: "Last Measured Concentration: "
+                text: "Last Measured Tank Concentration: "
                 font_name: "NexaLight"
                 font_size: '20pt'
                 width: self.texture_size[0]
@@ -173,7 +330,7 @@
         BoxLayout:
             orientation: 'vertical'
             padding: [150,150,150,150]
-            spacing: 15
+            spacing: 20
             size_hint_y: 0.9
 
             Label:
@@ -182,12 +339,18 @@
                 font_name: "NexaHeavy"
                 font_size: 32
                 color: 1,1,1
+                padding: [150, 100, 150, 150]
+
+
+            # Widget:
+            #     size_hint_y: 0.8
 
             MDTextField:
                 id: login_user_input
                 hint_text: "U-number"
                 icon_left: 'account'
                 font_name: "NexaLight"
+                halign: 'center'
                 font_size: '20pt'
                 multiline: False
                 on_text_validate:
@@ -197,6 +360,7 @@
                 id: login_pass_input
                 hint_text: "4-digit Passcode"
                 icon_left: 'lock'
+                halign: 'center'
                 font_name: "NexaLight"
                 font_size: '20pt'
                 multiline: False
@@ -221,7 +385,52 @@
 
 
 
+# Please measure your current solution tank concentraition: INPUT use engineering fill profile to fill at least 600 ML of solution tank
 
+# This is TODAY'S TANK CONCENTRATION!!!!
+
+# 
+<InputSolutionTankConcentration>
+    name: "inputSolutionTankConcentration"
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [50, 15, 50, 15]
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [150,150,150,150]
+            spacing: 15
+            size_hint_y: 0.9
+
+            Label:
+                id: tankSolution_label
+                text: 'Enter Tank Solution Concentration'
+                halign: "center"
+                font_name: "NexaHeavy"
+                font_size: 32
+                color: 1,1,1
+
+            MDTextField:
+                id: tankSolution_value
+                hint_text: "ex: 0.15"
+                halign: "center"
+                font_name: "NexaLight"
+                font_size: '20pt'
+                multiline: False
+                on_text_validate:
+                    root.saveTankSolution()
+
+
+        BoxLayout:
+            size_hint_y: 0.1
+            padding: [10, 10, 10, 10]
+
+            MDFabButton:
+                text: "Back"
+                icon: "arrow-left"
+                on_release:
+                    app.root.current = "validateCalibUser"
 
 
 
@@ -250,13 +459,13 @@
                 size_hint_x: 0.3
             Label:
                 id: nominalValue_label
-                text: "Nominal Value (from wash profile): "
+                text: "Soap Water Concentration:"
                 font_name: "NexaLight"
                 font_size: '20pt'
                 width: self.texture_size[0]
             Label:
                 id: nominalValue
-                text: "_________%" 
+                text: "_________%"  ## know previous input- LAST CALIBRATED VALUE (15).  # MEASURE FROM THE TIME DELTA THING solutionTankConcentration
                 font_name: "NexaHeavy"
                 font_size: '20pt'
                 width: self.texture_size[0]
@@ -289,7 +498,7 @@
         BoxLayout:
             padding: 20
             spacing: 20
-            size_hint_y: 0.4
+            size_hint_y: 0.3
             orientation: 'horizontal'
             Button:
                 text: "Cancel"
@@ -352,53 +561,70 @@
         # ===========================
         BoxLayout:
             orientation: 'vertical'
-            padding: [150,150,150,150]
+            padding: [150,0,150,150]
             size_hint_y: 1.6
 
             Label:
                 id: newConcentration_label
                 text: "Current Measured Concentration:"
+                halign: 'center'
                 font_name: "NexaHeavy"
                 font_size: '28pt'
                 font_size: 32
                 color: 1,1,1
-                padding: [0, 100, 0, 150]
+                padding: [0, 100, 0, 100]
             
-            BoxLayout:
-                # padding: 20
-                spacing: 0.01
-                size_hint_y: 0.5
-                orientation: 'horizontal'
+            # BoxLayout:
+            #     # padding: 20
+            #     # spacing: 0.01
+            #     halign: 'center'
+            #     size_hint_y: 0.5
+            #     orientation: 'horizontal'
 
-                MDTextField:
-                    id: inputConcentration
-                    focus: True
-                    helper_text: "Enter Concentration %"
-                    icon_left: 'barcode'
-                    size_hint_x: 0.2
-                    halign: 'center'
-                    input_filter: 'float'  # Allow only numbers and dot
-                    normal_color: 1,1,1,0.05
-                    color_active: 0,1,1,0.1
-                    font_name: "NexaLight"
-                    font_size: '20pt'
-                    multiline: False
-                    pos_hint: {"center_y": 0.5}
-                    on_text_validate:
-                        root.save_concentration("inputConcentration")
+
+
+
+                # MDTextField:
+                # id: user_id_in
+                # focus: True
+                # helper_text: "Scan Barcode"
+                # icon_left: 'barcode'
+                # halign: 'center'
+                # normal_color: 1,1,1,0.05
+                # color_active: 0,1,1,0.1
+                # font_name: "NexaLight"
+                # font_size: '20pt'
+                # multiline: False
+                # on_text_validate:
+
+            MDTextField:
+                id: inputConcentration
+                focus: True
+                helper_text: "Enter Concentration %"
+                icon_left: 'barcode'
+                # size_hint_x: 0.2
+                halign: 'center'
+                input_filter: 'float'  # Allow only numbers and dot
+                normal_color: 1,1,1,0.05
+                color_active: 0,1,1,0.1
+                font_name: "NexaLight"
+                font_size: '20pt'
+                multiline: False
+                # pos_hint: {"center_y": 0.5}
+                on_text_validate:
+                    root.save_concentration("inputConcentration")
 
                     # on_focus: if not self.focus: root.update_concentration_text(self.text)
 
-                Label:
-                    id: percent_label
-                    size_hint_x: 0.03
-                    text: "%"
-
-                    halign: 'left'
-                    font_name: "NexaHeavy"
-                    font_size: '30pt'
-                    color: 1,1,1
-                    pos_hint: {"center_y": 0.5}
+                # Label:
+                #     id: percent_label
+                #     size_hint_x: 0.03
+                #     text: "%"
+                #     halign: 'left'
+                #     font_name: "NexaHeavy"
+                #     font_size: '30pt'
+                #     color: 1,1,1
+                #     pos_hint: {"center_y": 0.5}
 
                     # padding: [150, 100, 150, 150]
 
@@ -416,7 +642,7 @@
         BoxLayout:
             # padding: 20
             spacing: 20
-            size_hint_y: 0.5
+            size_hint_y: 0.4
             orientation: 'horizontal'
             Button:
                 text: "Cancel"
@@ -451,7 +677,7 @@
             orientation: 'vertical'
             padding: [150,150,150,150]
             size_hint_y: 1.6
-
+            spacing: 100
             Label:
                 id: desired_conc_label
                 text: "Turn knob CW by 1/2 turn."
@@ -462,6 +688,7 @@
 
             Label:
                 id: adjust_valves_label
+                halign: "center"
                 text: "placeholder"
                 font_name: "NexaHeavy"
                 font_size: '28pt'
@@ -504,8 +731,8 @@
                 background_normal: '' # DO THIS TO MAKE BUTTON NOT DARKER
                 background_color: [247/255, 187/255, 112/255, 1]
                 on_release: 
-                    app.root.current = "barcode"
-                    # root.confirmConcClicked()
+                    # app.root.current = "barcode"
+                    root.confirmConcClicked()
 # ===================================================================================
 <WashOptionsScreen>:
 
