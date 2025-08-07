@@ -134,7 +134,7 @@ Consult Ben Barger for the password.
 For the calibration data, we temporarily use a lookup table to 
 determine at what concentration we are to set the pressure and flow to achieve it.
 
-# CalibrationDataScreen.py
+## CalibrationDataScreen.py
 
 Most of the TODO is here.  After the first Measured Concentration page,
 some lookup table or algorithm is needed to determine the exact FLOW RATE and pressure
@@ -155,4 +155,27 @@ variables. As seen above, you can reference these by doing:
 However, be aware that in order for these values to be USEFUL, you might want to then uploaded
 those values to the SQL database at the end of setting them locally to GSM.
 
-Additionally, you might want to consider setting permissions for whichever 
+Additionally, you might want to consider setting permissions for whichever users you'd like to actually be able to SET calibrations.
+These users are pulled from the same database that the Kiosk does (User_Table).
+
+```
+conn = pymssql.connect(
+    server=server,
+    user=user,
+    password=password,
+    database=database
+)
+
+cursor = conn.cursor()
+cursor.execute('SELECT * FROM User_Table')
+```
+
+Once populateUsersList(), which runs the above code, actually pulls in the users locally and saves it to CALIBRATE_DICT.
+Example:
+```
+'U123456': ('Test McFarlin', True, False, False, False, False, '1234'),
+```
+
+![alt text](calibrate_dict_db_structure.png)
+
+IMPORTANT: A lot of the washerGlobals var_iables are temporarily hardcoded in, so starting new sessions will automatically reset, for instance, <code>solutionTankConcentration</code> is set to 0.16 at the start of every new run, so to ensure all changes are PERSISTENT you must be pushing to SQL and pulling those changes upon build(), in run_washer_main.py. Copy the same structure we have in <code>populateUsersList()</code> but in reverse so that the changes to GSM values go to the SQL database as well.  Feel free to set more functions but for other variables too, not just calibration data users info.

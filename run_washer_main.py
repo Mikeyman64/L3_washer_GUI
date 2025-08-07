@@ -115,7 +115,6 @@ class Runner(MDApp):
 
         self.populateUsersList()
 
-        print(GlobalScreenManager.CALIBRATION_USERS)
 
         globalSM.transition = NoTransition()
 
@@ -166,7 +165,11 @@ class Runner(MDApp):
             #     GlobalScreenManager.ADMIN_USERS.append(row[0])
             # if row[6] == True: # Admin Access
             #     GlobalScreenManager.QA_USERS.append(row[0])
- 
+
+
+        # PRINTS ALL THE USERS PULLED FROM SQL INTO CALIBRATION_USERS.
+        print(GlobalScreenManager.CALIBRATION_USERS)\
+        
         # Close the connection
         conn.close()
  
