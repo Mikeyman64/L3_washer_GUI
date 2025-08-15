@@ -139,6 +139,7 @@ class Runner(MDApp):
         #     f'PWD={password};'
         #     'TrustServerCertificate=yes;'
         # )
+        print(server,user,password,database)
         conn = pymssql.connect(
             server=server,
             user=user,
