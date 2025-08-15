@@ -124,7 +124,7 @@ class Runner(MDApp):
     def populateUsersList(self):
         load_dotenv()  # or just load_dotenv() if it's named `.env` in same dir
 
-        driver = os.getenv('DRIVER')
+        #driver = os.getenv('DRIVER')
         server = os.getenv('SERVER')
         user = os.getenv('UID')
         password = os.getenv('PASSWORD')
