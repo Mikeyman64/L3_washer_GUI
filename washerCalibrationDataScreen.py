@@ -460,7 +460,9 @@ class TestConcentrationPage(Screen):
 
         gsm = GSM()
         gsm.CalibrateDict["targetConcentration"] = input_val
-        print(f"Your concentration is {gsm.CalibrateDict["measuredConcentration"]}")
+        ###################TEST##########################
+        concStr = gsm.CalibrateDict["measuredConcentration"]
+        print(f"Your concentration is {concStr}")
         gsm.current = "adjustRatePage"
 
     def cancelButtonClicked(self):

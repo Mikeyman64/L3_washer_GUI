@@ -23,6 +23,8 @@ A touchscreen-based GUI built using [Kivy](https://kivy.org/) and [KivyMD](https
 - Hardware integration with the raspberry pi, and anything related to reading values for the Calibration, may require extra playing around
 with packages like gpiod, rpi_lcd, etc. In other words, functionality reading from washer hardware is not automatically guaranteed inside of
 washVenv.
+- KivyMD 2.0.0 at least must be installed. At time of this update (8/15/2025) PyPi only installs up to 1.2.0 which does not
+install MDFabButton, which is needed for this build. See Requirements for more details. 
 - (washVenv2) is an experimental one that might also work. However, I would still recommend just sticking with washVenv.
 
 ### Requirements
