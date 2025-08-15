@@ -485,7 +485,8 @@ class AdjustRatePage(Screen):
 
     def on_enter(self):
         gsm = GSM()
-        self.ids["desired_conc_label"].text = f"Measured concentration: {gsm.CalibrateDict["targetConcentration"]}"
+        tarStr = gsm.CalibrateDict["targetConcentration"]
+        self.ids["desired_conc_label"].text = f"Measured concentration: {tarStr}"
     
         '''
         Start reading the values.
