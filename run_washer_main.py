@@ -122,12 +122,12 @@ class Runner(MDApp):
     
 
     def populateUsersList(self):
-        load_dotenv("credentials.env")  # or just load_dotenv() if it's named `.env` in same dir
+        load_dotenv()  # or just load_dotenv() if it's named `.env` in same dir
 
         driver = os.getenv('DRIVER')
         server = os.getenv('SERVER')
         user = os.getenv('UID')
-        password = os.getenv('PWD')
+        password = os.getenv('PASSWORD')
         database = os.getenv('DATABASE')
 
         # Connect to the database using pyodbc
