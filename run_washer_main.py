@@ -127,7 +127,7 @@ class Runner(MDApp):
         driver = os.getenv('DRIVER')
         server = os.getenv('SERVER')
         user = os.getenv('UID')
-        password = os.getenv('PWD')
+        password = 'aztmvcjfrizkcpdcehky'#os.getenv('PWD')
         database = os.getenv('DATABASE')
 
         # Connect to the database using pyodbc
